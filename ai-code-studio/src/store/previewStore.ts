@@ -1,7 +1,7 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { create } from "zustand";
 import { checkPort, runCommand, getProcessOutput, killProcess } from "../lib/commandApi";
-import { isMobileOS } from "../lib/platform";
+import { canExecuteCommands, isMobileOS } from "../lib/platform";
 import { detectPreviewPlan, type PreviewPlan } from "../preview/detect";
 import { useProjectStore } from "./projectStore";
 
@@ -61,12 +61,12 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
   detect: async () => {
     set({ status: "detecting", error: null });
     try {
-      const plan = await detectPreviewPlan({ staticOnly: isMobileOS() });
+      const plan = await detectPreviewPlan({ staticOnly: !canExecuteCommands() });
       set({ plan, port: plan?.port ?? null, status: plan ? "idle" : "error" });
       if (!plan) {
         set({
           error: isMobileOS()
-            ? "暂无可预览的 HTML/SVG 文件。可以让智能体创建 index.html。"
+            ? "设备上没有可用的 Node.js 运行时，只能直接预览静态 HTML/SVG 文件。"
             : "无法检测该项目的运行方式。",
         });
         return null;

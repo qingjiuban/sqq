@@ -6,8 +6,8 @@ use commands::filesystem::{
     write_file, ProjectState,
 };
 use commands::process::{
-    check_port, find_free_port, get_process_output, kill_process, list_processes, run_command,
-    ProcessState,
+    check_port, find_free_port, get_process_output, kill_process, list_processes, probe_runtime,
+    run_command, ProcessState,
 };
 use commands::secrets::{delete_secret, get_secret, save_secret};
 use std::sync::Mutex;
@@ -43,7 +43,8 @@ pub fn run() {
             kill_process,
             list_processes,
             check_port,
-            find_free_port
+            find_free_port,
+            probe_runtime
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

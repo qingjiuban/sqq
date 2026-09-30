@@ -23,6 +23,10 @@ export function ensureWorkspace(): Promise<ProjectInfo> {
   return invoke<ProjectInfo>("ensure_workspace");
 }
 
+export function probeRuntime(binary: string): Promise<boolean> {
+  return invoke<boolean>("probe_runtime", { binary });
+}
+
 export function listDir(path: string): Promise<FileEntry[]> {
   return invoke<FileEntry[]>("list_dir", { rel: path });
 }

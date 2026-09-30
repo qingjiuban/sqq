@@ -55,3 +55,7 @@ export function checkPort(port: number): Promise<boolean> {
 export function findFreePort(): Promise<number> {
   return invoke<number>("find_free_port");
 }
+
+export function probeRuntime(binary: string): Promise<boolean> {
+  return invoke<boolean>("probe_runtime", { binary });
+}

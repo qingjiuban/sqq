@@ -73,13 +73,16 @@ pub struct ProcessOutput {
     pub stderr: String,
 }
 
+/// Mobile-safe subset: interpreters and package managers only, so a dev server
+/// can run inside the app sandbox. Anything that touches the network stack or
+/// the system is still blocked by FORBIDDEN.
+#[cfg(any(target_os = "android", target_os = "ios"))]
+const MOBILE_ALLOWED: &[str] = &[
+    "node", "npm", "pnpm", "npx", "yarn", "bun", "vite", "tsc", "deno",
+    "python", "python3", "pip", "pip3", "uvicorn", "gunicorn", "flask",
+];
+
 pub fn validate_command(command: &str, args: &[String]) -> Result<(), String> {
-    if cfg!(any(target_os = "android", target_os = "ios")) {
-        return Err(
-            "Running commands is disabled on mobile. Edit files and use the AI agent instead."
-                .into(),
-        );
-    }
     let command = command.trim();
     if command.is_empty() {
         return Err("Command must not be empty".into());
@@ -91,10 +94,14 @@ pub fn validate_command(command: &str, args: &[String]) -> Result<(), String> {
     if FORBIDDEN.contains(&base.as_str()) {
         return Err(format!("Command \"{command}\" is blocked by the command policy"));
     }
-    if !ALLOWED.contains(&base.as_str()) {
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    let allowed: &[&str] = MOBILE_ALLOWED;
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    let allowed: &[&str] = ALLOWED;
+    if !allowed.contains(&base.as_str()) {
         return Err(format!(
             "Command \"{command}\" is not in the allow list (allowed: {})",
-            ALLOWED.join(", ")
+            allowed.join(", ")
         ));
     }
     for arg in args {
@@ -294,6 +301,27 @@ pub fn list_processes(process_state: State<ProcessState>) -> Result<Vec<String>,
         .iter()
         .map(|(id, entry)| format!("{}: {}", id, entry.command))
         .collect())
+}
+
+/// Probe whether a bare executable can be spawned on this device. Used at boot
+/// to decide if the mobile sandbox has a usable Node.js runtime.
+#[tauri::command]
+pub fn probe_runtime(binary: String) -> bool {
+    let binary = binary.trim().to_lowercase();
+    if FORBIDDEN.contains(&binary.as_str()) {
+        return false;
+    }
+    Command::new(&binary)
+        .arg("--version")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map(|mut child| {
+            let _ = child.wait();
+            true
+        })
+        .unwrap_or(false)
 }
 
 /// Check whether something is accepting TCP connections on 127.0.0.1:<port>.

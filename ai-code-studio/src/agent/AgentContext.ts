@@ -1,5 +1,5 @@
 import type { AgentTool } from "../types/tools";
-import { canExecuteCommands } from "../lib/platform";
+import { canExecuteCommands, isMobileOS } from "../lib/platform";
 
 function describeTool(tool: AgentTool): string {
   return `- ${tool.name}: ${tool.description}\n  input schema: ${JSON.stringify(
@@ -28,6 +28,17 @@ export function buildSystemPrompt(
   } else {
     lines.push(
       "Running shell commands is unavailable on this platform, so rely on file edits and careful reasoning.",
+    );
+  }
+
+  if (isMobileOS()) {
+    lines.push(
+      "",
+      "## Storage on this device",
+      "The user has no server of their own. Persistence choices are constrained:",
+      "- Prefer embedded storage that runs inside Node.js: sql.js / better-sqlite3, IndexedDB, LevelDB-js, PouchDB. Data files live in the project directory.",
+      "- Serverless cloud databases the user connects to over HTTPS are acceptable: Supabase, Neon, Turso, Cloudflare D1. Connection strings belong in a .env file the user fills in.",
+      "- MySQL, PostgreSQL, Redis and MongoDB servers cannot run here because the sandbox has no such binaries. When the user asks for them, explain the limitation and offer one of the two options above.",
     );
   }
 
