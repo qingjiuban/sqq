@@ -159,7 +159,10 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                 <span className="section-label">你的服务商</span>
                 <button
                   className="btn-icon"
-                  onClick={() => setEditingId("new")}
+                  onClick={() => {
+                    setEditingId("new");
+                    setMobilePane("detail");
+                  }}
                   title="添加服务商"
                   aria-label="添加服务商"
                 >
@@ -183,7 +186,10 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                           ? "bg-[var(--color-surface-raised)]"
                           : "hover:bg-white/[0.04]"
                       }`}
-                      onClick={() => setEditingId(provider.id)}
+                      onClick={() => {
+                        setEditingId(provider.id);
+                        setMobilePane("detail");
+                      }}
                     >
                       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[var(--radius-sm)] bg-[var(--color-surface-hover)] text-xs font-semibold text-[var(--color-text-secondary)]">
                         {provider.name.slice(0, 1).toUpperCase()}
