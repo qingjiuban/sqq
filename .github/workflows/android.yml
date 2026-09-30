@@ -50,8 +50,14 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configure preinstalled Android SDK
+        run: |
+          SDK_ROOT="/usr/local/lib/android/sdk"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          CMDLINE_BIN="$(ls -d "$SDK_ROOT"/cmdline-tools/*/bin 2>/dev/null | head -1)"
+          echo "Using cmdline-tools at: $CMDLINE_BIN"
+          echo "$CMDLINE_BIN" >> "$GITHUB_PATH"
 
       - name: Install Android platform, build-tools and NDK
         run: |
