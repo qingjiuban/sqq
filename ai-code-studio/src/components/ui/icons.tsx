@@ -247,9 +247,38 @@ export function IconCube(props: IconProps) {
   );
 }
 
+export function IconEye(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M1.75 8S4.25 3.75 8 3.75 14.25 8 14.25 8 11.75 12.25 8 12.25 1.75 8 1.75 8Z" />
+      <circle cx="8" cy="8" r="1.9" />
+    </Icon>
+  );
+}
+
+export function IconEyeOff(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6.3 3.95A6.9 6.9 0 0 1 8 3.75c3.75 0 6.25 4.25 6.25 4.25a12 12 0 0 1-2.1 2.6" />
+      <path d="M9.9 9.9a2 2 0 0 1-2.8-2.8" />
+      <path d="M4.6 4.9A11.7 11.7 0 0 0 1.75 8S4.25 12.25 8 12.25c1 0 1.9-.28 2.7-.72" />
+      <path d="M2.5 2.5l11 11" />
+    </Icon>
+  );
+}
+
+export function IconCopy(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="5.75" y="5.75" width="7.5" height="7.5" rx="1.4" />
+      <path d="M4.5 10.25H3.9a1.4 1.4 0 0 1-1.4-1.4V3.9a1.4 1.4 0 0 1 1.4-1.4h4.95a1.4 1.4 0 0 1 1.4 1.4v.6" />
+    </Icon>
+  );
+}
+
 /**
- * Brand mark: a stylized "code bracket" cube. Geometric, monochrome-capable,
- * scales from 16px to 56px without losing legibility.
+ * Brand mark: a geometric "prompt" glyph — a chevron and a cursor inside a
+ * rounded square. Monochrome-first, reads cleanly from 16px to 56px.
  */
 export function BrandMark({
   size = 24,
@@ -268,55 +297,26 @@ export function BrandMark({
       aria-hidden="true"
     >
       <rect
-        x="1"
-        y="1"
-        width="30"
-        height="30"
-        rx="9"
-        fill="url(#acs-mark-grad)"
-      />
-      <rect
-        x="1"
-        y="1"
-        width="30"
-        height="30"
-        rx="9"
-        stroke="rgba(255,255,255,0.14)"
-        strokeWidth="1"
+        x="2"
+        y="2"
+        width="28"
+        height="28"
+        rx="8"
+        fill="var(--color-accent)"
       />
       <path
-        d="M12.2 10.5 8 16l4.2 5.5"
-        stroke="white"
-        strokeWidth="2.1"
+        d="M11 11.5 15.5 16 11 20.5"
+        stroke="#fff"
+        strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M19.8 10.5 24 16l-4.2 5.5"
-        stroke="white"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M17.4 9.6 14.6 22.4"
-        stroke="rgba(255,255,255,0.55)"
-        strokeWidth="1.7"
+        d="M17 20.5h4.5"
+        stroke="rgba(255,255,255,0.72)"
+        strokeWidth="2.2"
         strokeLinecap="round"
       />
-      <defs>
-        <linearGradient
-          id="acs-mark-grad"
-          x1="1"
-          y1="1"
-          x2="31"
-          y2="31"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#7B7EF5" />
-          <stop offset="1" stopColor="#4B4ECB" />
-        </linearGradient>
-      </defs>
     </svg>
   );
 }

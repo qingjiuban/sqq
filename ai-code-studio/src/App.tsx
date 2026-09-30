@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import MobileShell, { TAB_ICONS } from "./components/layout/MobileShell";
+import AppHeader, { type ViewMode } from "./components/layout/AppHeader";
 import CodeEditor from "./components/editor/CodeEditor";
 import EditorTabs from "./components/editor/EditorTabs";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
@@ -8,49 +9,13 @@ import ChatPanel from "./components/chat/ChatPanel";
 import TerminalPanel from "./components/terminal/TerminalPanel";
 import PreviewPanel from "./components/preview/PreviewPanel";
 import ModelSettings from "./components/settings/ModelSettings";
-import { BrandMark, IconSettings, IconTerminal } from "./components/ui/icons";
+import { BrandMark, IconSettings } from "./components/ui/icons";
 import { useProjectStore } from "./store/projectStore";
 import { useTerminalStore } from "./store/terminalStore";
 import { usePreviewStore } from "./store/previewStore";
 import { useMediaQuery } from "./lib/useMediaQuery";
 
-type ViewMode = "editor" | "preview";
 type MobileTab = "files" | "code" | "chat" | "preview";
-
-/**
- * Two-option segmented switch. Lives in the command bar; the active option is
- * marked by a raised pill rather than a colored block.
- */
-function SegmentedControl<T extends string>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-}) {
-  return (
-    <div className="flex items-center gap-0.5 rounded-[8px] bg-[var(--color-ink)] p-0.5">
-      {options.map((option) => {
-        const active = value === option.value;
-        return (
-          <button
-            key={option.value}
-            className={`rounded-[6px] px-3 py-1 text-xs font-medium transition-colors ${
-              active
-                ? "bg-[var(--color-float)] text-[var(--color-fg)]"
-                : "text-[var(--color-mute)] hover:text-[var(--color-dim)]"
-            }`}
-            onClick={() => onChange(option.value)}
-          >
-            {option.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function MobileLayout({
   onViewChange,
@@ -124,11 +89,20 @@ export default function App() {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
         saveActive();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "`") {
+        e.preventDefault();
+        toggleTerminal();
+        return;
+      }
+      if (e.key === "Escape") {
+        setShowSettings(false);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [saveActive]);
+  }, [saveActive, toggleTerminal]);
 
   const settingsModal = showSettings && (
     <ModelSettings onClose={() => setShowSettings(false)} />
@@ -136,15 +110,23 @@ export default function App() {
 
   if (isNarrow) {
     return (
-      <div className="flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--color-ink)] text-[var(--color-fg)]">
-        <header className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
-          <div className="flex items-center gap-2">
-            <BrandMark size={22} />
-            <span className="text-md font-semibold tracking-tight">
+      <div className="flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--color-canvas)] text-[var(--color-text)]">
+        <header className="flex h-11 shrink-0 items-center justify-between gap-2 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <BrandMark size={20} />
+            <span className="shrink-0 text-sm font-semibold tracking-tight">
               AI Code Studio
             </span>
+            {root && projectName && (
+              <>
+                <span className="h-3.5 w-px shrink-0 bg-[var(--color-border)]" />
+                <span className="truncate text-xs text-[var(--color-text-muted)]">
+                  {projectName}
+                </span>
+              </>
+            )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               className="btn-icon"
               onClick={() => setShowSettings(true)}
@@ -154,7 +136,7 @@ export default function App() {
               <IconSettings />
             </button>
             {root && !isMobile && (
-              <button className="btn btn-primary" onClick={openProject}>
+              <button className="btn btn-primary !h-7" onClick={openProject}>
                 切换
               </button>
             )}
@@ -176,70 +158,17 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-ink)] text-[var(--color-fg)]">
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] pl-3 pr-2.5">
-        {/* Brand + project identity */}
-        <div className="flex min-w-0 items-center gap-2.5">
-          <BrandMark size={24} />
-          <span className="shrink-0 text-md font-semibold tracking-tight">
-            AI Code Studio
-          </span>
-          {root && (
-            <>
-              <span className="h-4 w-px shrink-0 bg-[var(--color-line)]" />
-              <span
-                className="max-w-52 truncate text-sm text-[var(--color-dim)]"
-                title={projectName}
-              >
-                {projectName || "未命名"}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Center: primary view switch */}
-        <div className="flex flex-1 justify-center">
-          {root && (
-            <SegmentedControl
-              value={view}
-              onChange={setView}
-              options={[
-                { value: "editor", label: "编辑器" },
-                { value: "preview", label: "预览" },
-              ]}
-            />
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex shrink-0 items-center gap-1">
-          <button
-            className="btn-icon relative"
-            onClick={toggleTerminal}
-            title="终端"
-            aria-label="终端"
-          >
-            <IconTerminal />
-            {terminalCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--color-iris)] px-1 text-[9px] font-medium text-white">
-                {terminalCount}
-              </span>
-            )}
-          </button>
-          <button
-            className="btn-icon"
-            onClick={() => setShowSettings(true)}
-            title="设置"
-            aria-label="设置"
-          >
-            <IconSettings />
-          </button>
-          <span className="mx-1 h-4 w-px bg-[var(--color-line)]" />
-          <button className="btn btn-primary" onClick={openProject}>
-            {root ? "切换项目" : "打开项目"}
-          </button>
-        </div>
-      </header>
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-canvas)] text-[var(--color-text)]">
+      <AppHeader
+        root={!!root}
+        projectName={projectName}
+        view={view}
+        onViewChange={setView}
+        onToggleTerminal={toggleTerminal}
+        terminalCount={terminalCount}
+        onOpenSettings={() => setShowSettings(true)}
+        onOpenProject={openProject}
+      />
 
       <div className="flex min-h-0 flex-1">
         {root ? (

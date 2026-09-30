@@ -47,7 +47,7 @@ export const ModelGateway = {
     const resolved = await withApiKey(config);
     const adapter = adapterFor(resolved.type);
     if (!adapter.listModels) {
-      throw new Error("This provider does not support listing models");
+      throw new Error("该服务商不支持获取模型列表");
     }
     return adapter.listModels(resolved);
   },

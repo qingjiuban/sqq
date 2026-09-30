@@ -1,40 +1,42 @@
 @import "tailwindcss";
 
 /* --------------------------------------------------------------------------
-   Design tokens
+   AI Code Studio — design system
 
-   Layered dark surfaces, a restrained text ramp and a single refined indigo
-   accent. The accent is reserved for state, focus, primary actions and agent
-   activity — never used as decoration. Everything in the UI reads from here.
+   A neutral, layered dark system for a native-feeling IDE. Surfaces carry
+   hierarchy; borders are supporting hairlines, not structure. A single
+   blue-leaning accent is reserved for state, focus, primary actions, active
+   tabs and agent activity. Everything in the UI reads from these tokens.
    -------------------------------------------------------------------------- */
 @theme {
-  /* Surface ramp: app -> surface -> elevated -> floating */
-  --color-ink: #0a0c10;
-  --color-panel: #0f1217;
-  --color-raised: #14181f;
-  --color-float: #1a1f28;
+  /* Surface ramp: canvas -> surface -> raised -> floating -> overlay */
+  --color-canvas: #0b0d11;
+  --color-surface: #0f1216;
+  --color-surface-raised: #14181e;
+  --color-surface-hover: #1a1f27;
+  --color-overlay: #1c222c;
 
-  /* Hairlines. Borders are supporting information, not structure. */
-  --color-line: #1f242f;
-  --color-line-soft: #171b23;
-  --color-line-strong: #2b3240;
+  /* Hairlines. */
+  --color-border: #20252e;
+  --color-border-subtle: #181c23;
+  --color-border-strong: #2d3440;
 
   /* Text ramp */
-  --color-fg: #e6e9f0;
-  --color-dim: #98a0b0;
-  --color-mute: #666d7c;
-  --color-faint: #464c58;
+  --color-text: #e7eaf0;
+  --color-text-secondary: #9ba3b2;
+  --color-text-muted: #6b7280;
+  --color-text-disabled: #464d58;
 
-  /* Accent — refined indigo, blue-leaning so it reads as product, not "AI purple" */
-  --color-iris: #6c70f0;
-  --color-iris-hi: #8f92ff;
-  --color-iris-deep: #232447;
-  --color-iris-ink: #c3c6ff;
+  /* Accent — product blue, used sparingly (target ~2% of the surface area) */
+  --color-accent: #5b76f7;
+  --color-accent-hover: #7089ff;
+  --color-accent-soft: #1d2547;
+  --color-accent-text: #b9c4ff;
 
   /* Semantic */
-  --color-ok: #3ecf8e;
-  --color-warn: #e6b04a;
-  --color-err: #f2555a;
+  --color-success: #43c98a;
+  --color-warning: #d9a441;
+  --color-error: #ec5b62;
   --color-info: #5aa9f5;
 
   /* Type scale — one ramp, no random sizes */
@@ -54,21 +56,18 @@
   --text-xl--line-height: 25px;
   --text-2xl: 22px;
   --text-2xl--line-height: 28px;
-  --text-3xl: 26px;
-  --text-3xl--line-height: 32px;
 
-  /* Radius ladder */
-  --radius-xs: 5px;
+  /* Radius ladder — professional, never pill-shaped */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-btn: 7px;
   --radius-input: 8px;
-  --radius-card: 10px;
-  --radius-panel: 12px;
-  --radius-modal: 16px;
+  --radius-panel: 10px;
+  --radius-modal: 13px;
 
   /* Shadows — only for floating layers */
-  --shadow-pop: 0 10px 34px -12px rgba(0, 0, 0, 0.7);
-  --shadow-modal: 0 30px 80px -30px rgba(0, 0, 0, 0.85);
+  --shadow-pop: 0 12px 32px -14px rgba(0, 0, 0, 0.72);
+  --shadow-modal: 0 32px 80px -32px rgba(0, 0, 0, 0.85);
 
   --font-sans:
     ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -90,8 +89,8 @@
 
   body {
     margin: 0;
-    background: var(--color-ink);
-    color: var(--color-fg);
+    background: var(--color-canvas);
+    color: var(--color-text);
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
@@ -102,12 +101,12 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-iris) 34%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 32%, transparent);
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: #262c3a transparent;
+    scrollbar-color: #262c36 transparent;
   }
 
   ::-webkit-scrollbar {
@@ -120,15 +119,20 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #232936;
+    background: #232935;
     border: 3px solid transparent;
     background-clip: content-box;
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #333b4d;
+    background: #333b49;
     background-clip: content-box;
+  }
+
+  :focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-accent) 75%, transparent);
+    outline-offset: 1px;
   }
 
   /* Prevent iOS zoom on focus without shrinking text on desktop. */
@@ -171,17 +175,11 @@
     cursor: pointer;
     user-select: none;
     transition:
-      background-color 0.15s ease,
-      border-color 0.15s ease,
-      color 0.15s ease,
-      box-shadow 0.15s ease,
-      opacity 0.15s ease;
+      background-color 0.14s ease,
+      border-color 0.14s ease,
+      color 0.14s ease,
+      opacity 0.14s ease;
     outline: none;
-  }
-
-  .btn:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 3.5px
-      color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
 
   .btn:disabled {
@@ -190,55 +188,46 @@
   }
 
   .btn-primary {
-    background: var(--color-iris);
+    background: var(--color-accent);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .btn-primary:hover {
-    background: var(--color-iris-hi);
-  }
-
-  .btn-secondary {
-    background: var(--color-float);
-    color: var(--color-fg);
-  }
-
-  .btn-secondary:hover {
-    background: #212734;
+    background: var(--color-accent-hover);
   }
 
   .btn-outline {
-    border: 1px solid var(--color-line);
-    color: var(--color-dim);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
     background: transparent;
   }
 
   .btn-outline:hover {
-    border-color: var(--color-line-strong);
-    color: var(--color-fg);
+    border-color: var(--color-border-strong);
+    color: var(--color-text);
     background: rgba(255, 255, 255, 0.03);
   }
 
   .btn-ghost {
-    color: var(--color-dim);
+    color: var(--color-text-secondary);
     background: transparent;
   }
 
   .btn-ghost:hover {
-    color: var(--color-fg);
+    color: var(--color-text);
     background: rgba(255, 255, 255, 0.05);
   }
 
   .btn-danger {
-    border: 1px solid color-mix(in srgb, var(--color-err) 35%, transparent);
-    color: var(--color-err);
+    border: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
+    color: var(--color-error);
     background: transparent;
   }
 
   .btn-danger:hover {
-    background: color-mix(in srgb, var(--color-err) 10%, transparent);
-    border-color: color-mix(in srgb, var(--color-err) 55%, transparent);
+    background: color-mix(in srgb, var(--color-error) 10%, transparent);
+    border-color: color-mix(in srgb, var(--color-error) 55%, transparent);
   }
 
   /* Square icon-only control. */
@@ -249,22 +238,17 @@
     height: 28px;
     width: 28px;
     border-radius: var(--radius-btn);
-    color: var(--color-mute);
+    color: var(--color-text-muted);
     cursor: pointer;
     transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
+      background-color 0.14s ease,
+      color 0.14s ease;
     outline: none;
   }
 
   .btn-icon:hover {
-    color: var(--color-fg);
+    color: var(--color-text);
     background: rgba(255, 255, 255, 0.06);
-  }
-
-  .btn-icon:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 3.5px
-      color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
 
   .btn-icon:disabled {
@@ -276,30 +260,27 @@
   .input {
     width: 100%;
     height: 32px;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-input);
-    background: var(--color-ink);
+    background: var(--color-canvas);
     padding: 0 10px;
-    color: var(--color-fg);
+    color: var(--color-text);
     outline: none;
     transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease,
-      background-color 0.15s ease;
+      border-color 0.14s ease,
+      background-color 0.14s ease;
   }
 
   .input::placeholder {
-    color: var(--color-faint);
+    color: var(--color-text-disabled);
   }
 
   .input:hover {
-    border-color: var(--color-line-strong);
+    border-color: var(--color-border-strong);
   }
 
   .input:focus {
-    border-color: color-mix(in srgb, var(--color-iris) 70%, transparent);
-    box-shadow: 0 0 0 3px
-      color-mix(in srgb, var(--color-iris) 16%, transparent);
+    border-color: color-mix(in srgb, var(--color-accent) 70%, transparent);
   }
 
   textarea.input {
@@ -317,7 +298,7 @@
     gap: 6px;
     font-size: var(--text-xs);
     font-weight: 600;
-    color: var(--color-dim);
+    color: var(--color-text-secondary);
   }
 
   /* Form field label. */
@@ -325,16 +306,7 @@
     display: block;
     font-size: var(--text-xs);
     font-weight: 500;
-    color: var(--color-mute);
-  }
-
-  /* Uppercase micro-label. Used sparingly, only for true metadata rows. */
-  .eyebrow {
-    font-size: var(--text-2xs);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-mute);
+    color: var(--color-text-muted);
   }
 
   /* ---- Chips / badges --------------------------------------------------- */
@@ -343,54 +315,43 @@
     align-items: center;
     gap: 5px;
     height: 20px;
-    border-radius: 999px;
-    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    padding: 0 7px;
     font-size: var(--text-xs);
     font-weight: 500;
-    color: var(--color-dim);
-    background: var(--color-raised);
+    color: var(--color-text-secondary);
+    background: var(--color-surface-raised);
   }
 
   .chip-ok {
-    color: var(--color-ok);
-    background: color-mix(in srgb, var(--color-ok) 12%, transparent);
+    color: var(--color-success);
+    background: color-mix(in srgb, var(--color-success) 12%, transparent);
   }
 
   .chip-warn {
-    color: var(--color-warn);
-    background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+    color: var(--color-warning);
+    background: color-mix(in srgb, var(--color-warning) 12%, transparent);
   }
 
   .chip-err {
-    color: var(--color-err);
-    background: color-mix(in srgb, var(--color-err) 12%, transparent);
+    color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
   }
 
   .chip-accent {
-    color: var(--color-iris-ink);
-    background: color-mix(in srgb, var(--color-iris) 16%, transparent);
+    color: var(--color-accent-text);
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
   }
 
   /* ---- Panels ----------------------------------------------------------- */
-  /* A raised content container. Used instead of another border grid. */
-  .panel {
-    border-radius: var(--radius-panel);
-    background: var(--color-panel);
-  }
-
-  .panel-raised {
-    border-radius: var(--radius-card);
-    background: var(--color-raised);
-  }
-
   /* Thin divider between rows without drawing a full grid. */
   .divide-soft > * + * {
-    border-top: 1px solid var(--color-line-soft);
+    border-top: 1px solid var(--color-border-subtle);
   }
 }
 
 /* --------------------------------------------------------------------------
-   Motion
+   Motion — 120–200ms only, and only where it communicates state.
    -------------------------------------------------------------------------- */
 @keyframes acs-fade-in {
   from {
@@ -406,7 +367,7 @@
 @keyframes acs-pop-in {
   from {
     opacity: 0;
-    transform: scale(0.985);
+    transform: scale(0.99);
   }
   to {
     opacity: 1;
@@ -424,16 +385,26 @@
   }
 }
 
+@keyframes acs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .animate-fade-in {
-  animation: acs-fade-in 0.18s ease-out;
+  animation: acs-fade-in 0.16s ease-out;
 }
 
 .animate-pop-in {
-  animation: acs-pop-in 0.16s ease-out;
+  animation: acs-pop-in 0.15s ease-out;
 }
 
 .animate-pulse-soft {
   animation: acs-pulse 1.4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: acs-spin 0.9s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

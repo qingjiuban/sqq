@@ -36,9 +36,9 @@ function Section({
   return (
     <div className="flex flex-col gap-3 px-5 py-4">
       <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-medium text-[var(--color-fg)]">{title}</span>
+        <span className="text-sm font-medium text-[var(--color-text)]">{title}</span>
         {description && (
-          <span className="text-xs text-[var(--color-mute)]">{description}</span>
+          <span className="text-xs text-[var(--color-text-muted)]">{description}</span>
         )}
       </div>
       {children}
@@ -70,18 +70,18 @@ export default function AgentSettings() {
             return (
               <button
                 key={value}
-                className={`flex items-center gap-3 rounded-[var(--radius-card)] px-3 py-2.5 text-left text-sm transition-colors ${
+                className={`flex items-center gap-3 rounded-[var(--radius-panel)] px-3 py-2.5 text-left text-sm transition-colors ${
                   active
-                    ? "bg-[var(--color-raised)] text-[var(--color-fg)]"
-                    : "text-[var(--color-dim)] hover:bg-white/[0.03]"
+                    ? "bg-[var(--color-surface-raised)] text-[var(--color-text)]"
+                    : "text-[var(--color-text-secondary)] hover:bg-white/[0.03]"
                 }`}
                 onClick={() => setLevel(value)}
               >
                 <span
                   className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border transition-colors ${
                     active
-                      ? "border-[var(--color-iris)] bg-[var(--color-iris)]"
-                      : "border-[var(--color-line-strong)]"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
+                      : "border-[var(--color-border-strong)]"
                   }`}
                 >
                   {active && (
@@ -105,9 +105,9 @@ export default function AgentSettings() {
             return (
               <button
                 key={item.value}
-                className={`flex flex-col gap-0.5 rounded-[var(--radius-card)] px-3 py-2.5 text-left transition-colors ${
+                className={`flex flex-col gap-0.5 rounded-[var(--radius-panel)] px-3 py-2.5 text-left transition-colors ${
                   active
-                    ? "bg-[var(--color-raised)]"
+                    ? "bg-[var(--color-surface-raised)]"
                     : "hover:bg-white/[0.03]"
                 }`}
                 onClick={() => setMode(item.value)}
@@ -116,21 +116,21 @@ export default function AgentSettings() {
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
                       active
-                        ? "bg-[var(--color-iris-hi)]"
-                        : "bg-[var(--color-faint)]"
+                        ? "bg-[var(--color-accent-hover)]"
+                        : "bg-[var(--color-text-disabled)]"
                     }`}
                   />
                   <span
                     className={`text-sm ${
                       active
-                        ? "text-[var(--color-fg)]"
-                        : "text-[var(--color-dim)]"
+                        ? "text-[var(--color-text)]"
+                        : "text-[var(--color-text-secondary)]"
                     }`}
                   >
                     {item.label}
                   </span>
                 </span>
-                <span className="pl-3.5 text-xs text-[var(--color-mute)]">
+                <span className="pl-3.5 text-xs text-[var(--color-text-muted)]">
                   {item.hint}
                 </span>
               </button>
@@ -143,12 +143,12 @@ export default function AgentSettings() {
         title="自我修复"
         description="校验改动并将失败反馈给模型。"
       >
-        <label className="flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--color-raised)] px-3 py-2.5">
+        <label className="flex items-center justify-between gap-4 rounded-[var(--radius-panel)] bg-[var(--color-surface-raised)] px-3 py-2.5">
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm text-[var(--color-fg)]">
+            <span className="text-sm text-[var(--color-text)]">
               编辑后自动校验
             </span>
-            <span className="text-xs text-[var(--color-mute)]">
+            <span className="text-xs text-[var(--color-text-muted)]">
               可用时运行 typecheck / build / test
             </span>
           </div>
@@ -156,7 +156,7 @@ export default function AgentSettings() {
             role="switch"
             aria-checked={autoVerify}
             className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-              autoVerify ? "bg-[var(--color-iris)]" : "bg-[var(--color-line-strong)]"
+              autoVerify ? "bg-[var(--color-accent)]" : "bg-[var(--color-border-strong)]"
             }`}
             onClick={() => setAutoVerify(!autoVerify)}
           >
@@ -168,10 +168,10 @@ export default function AgentSettings() {
           </button>
         </label>
 
-        <label className="flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--color-raised)] px-3 py-2.5">
+        <label className="flex items-center justify-between gap-4 rounded-[var(--radius-panel)] bg-[var(--color-surface-raised)] px-3 py-2.5">
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm text-[var(--color-fg)]">修复轮数</span>
-            <span className="text-xs text-[var(--color-mute)]">
+            <span className="text-sm text-[var(--color-text)]">修复轮数</span>
+            <span className="text-xs text-[var(--color-text-muted)]">
               放弃前最多尝试修复的次数
             </span>
           </div>

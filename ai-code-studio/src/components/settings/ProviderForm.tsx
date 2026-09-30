@@ -7,10 +7,12 @@ import {
   type ProviderCapabilities,
   type ProviderType,
 } from "../../types/model";
+import { IconCheck, IconCopy, IconEye, IconEyeOff } from "../ui/icons";
+import { StatusDot } from "../ui/Status";
 
 const TYPE_OPTIONS: { value: ProviderType; label: string }[] = [
-  { value: "openai-compatible", label: "OpenAI Compatible" },
-  { value: "custom-http", label: "Custom HTTP" },
+  { value: "openai-compatible", label: "OpenAI 兼容" },
+  { value: "custom-http", label: "自定义 HTTP" },
   { value: "ollama", label: "Ollama" },
   { value: "anthropic", label: "Anthropic" },
 ];
@@ -48,7 +50,7 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="label">{label}</span>
+      <span className="field-label">{label}</span>
       {children}
     </label>
   );
@@ -71,8 +73,11 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
     initial?.response ? JSON.stringify(initial.response, null, 2) : "",
   );
   const [status, setStatus] = useState("");
+  const [statusOk, setStatusOk] = useState<boolean | null>(null);
   const [models, setModels] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [reveal, setReveal] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const patch = (partial: Partial<ModelProviderConfig>) =>
     setConfig((current) => ({ ...current, ...partial }));
@@ -114,6 +119,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
     try {
       await task(buildConfig());
     } catch (error) {
+      setStatusOk(false);
       setStatus(error instanceof Error ? error.message : String(error));
     } finally {
       setBusy(false);
@@ -128,20 +134,35 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
 
   const handleTest = () =>
     run(async (next) => {
+      setStatusOk(null);
       setStatus("测试中…");
       const result = await ModelGateway.testConnection(next);
+      setStatusOk(result.ok);
       setStatus(
-        `${result.ok ? "成功" : "失败"} (${result.latencyMs}ms) — ${result.message}`,
+        `${result.ok ? "连接成功" : "连接失败"} (${result.latencyMs}ms) — ${result.message}`,
       );
     });
 
   const handleListModels = () =>
     run(async (next) => {
+      setStatusOk(null);
       setStatus("正在获取模型…");
       const list = await ModelGateway.listModels(next);
       setModels(list);
+      setStatusOk(true);
       setStatus(`共找到 ${list.length} 个模型`);
     });
+
+  const handleCopy = async () => {
+    if (!config.apiKey) return;
+    try {
+      await navigator.clipboard.writeText(config.apiKey);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard unavailable; ignore
+    }
+  };
 
   return (
     <div className="flex flex-col gap-3 overflow-y-auto p-4">
@@ -168,9 +189,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
         </Field>
       </div>
 
-      <Field
-        label={config.type === "custom-http" ? "接口地址" : "Base URL"}
-      >
+      <Field label={config.type === "custom-http" ? "接口地址" : "Base URL"}>
         <input
           className={inputClass}
           value={config.baseUrl}
@@ -194,13 +213,40 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
           </datalist>
         </Field>
         <Field label="API Key">
-          <input
-            className={inputClass}
-            type="password"
-            value={config.apiKey ?? ""}
-            onChange={(e) => patch({ apiKey: e.target.value })}
-            placeholder="sk-..."
-          />
+          <div className="relative">
+            <input
+              className={`${inputClass} pr-16`}
+              type={reveal ? "text" : "password"}
+              value={config.apiKey ?? ""}
+              onChange={(e) => patch({ apiKey: e.target.value })}
+              placeholder="sk-..."
+            />
+            <div className="absolute inset-y-0 right-1 flex items-center gap-0.5">
+              <button
+                type="button"
+                className="btn-icon !h-6 !w-6"
+                onClick={() => setReveal((v) => !v)}
+                title={reveal ? "隐藏" : "显示"}
+                aria-label={reveal ? "隐藏" : "显示"}
+              >
+                {reveal ? <IconEyeOff size={14} /> : <IconEye size={14} />}
+              </button>
+              <button
+                type="button"
+                className="btn-icon !h-6 !w-6"
+                onClick={handleCopy}
+                disabled={!config.apiKey}
+                title="复制"
+                aria-label="复制"
+              >
+                {copied ? (
+                  <IconCheck size={14} className="text-[var(--color-success)]" />
+                ) : (
+                  <IconCopy size={14} />
+                )}
+              </button>
+            </div>
+          </div>
         </Field>
       </div>
 
@@ -210,11 +256,11 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
             (key) => (
               <label
                 key={key}
-                className="flex items-center gap-1.5 text-[12px] text-[var(--color-dim)]"
+                className="flex items-center gap-1.5 text-[12px] text-[var(--color-text-secondary)]"
               >
                 <input
                   type="checkbox"
-                  className="accent-[var(--color-iris)]"
+                  className="accent-[var(--color-accent)]"
                   checked={config.capabilities[key]}
                   onChange={(e) =>
                     patch({
@@ -283,8 +329,19 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       </div>
 
       {status && (
-        <div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-ink)] px-3 py-2 font-mono text-[11px] whitespace-pre-wrap text-[var(--color-dim)]">
-          {status}
+        <div
+          className={`flex items-start gap-2 rounded-[var(--radius-sm)] border bg-[var(--color-canvas)] px-3 py-2 text-[11px] whitespace-pre-wrap ${
+            statusOk === true
+              ? "border-[color-mix(in_srgb,var(--color-success)_40%,transparent)] text-[var(--color-success)]"
+              : statusOk === false
+                ? "border-[color-mix(in_srgb,var(--color-error)_40%,transparent)] text-[var(--color-error)]"
+                : "border-[var(--color-border)] text-[var(--color-text-secondary)]"
+          }`}
+        >
+          {statusOk !== null && (
+            <StatusDot tone={statusOk ? "ok" : "err"} className="mt-1" />
+          )}
+          <span className="min-w-0 font-mono">{status}</span>
         </div>
       )}
     </div>

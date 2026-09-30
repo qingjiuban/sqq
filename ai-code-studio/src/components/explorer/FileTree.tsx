@@ -31,8 +31,8 @@ function TreeNode({ entry, depth }: { entry: FileEntry; depth: number }) {
       <div
         className={`group relative flex cursor-pointer items-center gap-1.5 py-[3px] pr-2 text-sm transition-colors ${
           isActive
-            ? "bg-[var(--color-raised)] text-[var(--color-fg)]"
-            : "text-[var(--color-dim)] hover:bg-white/[0.03] hover:text-[var(--color-fg)]"
+            ? "bg-[var(--color-surface-raised)] text-[var(--color-text)]"
+            : "text-[var(--color-text-secondary)] hover:bg-white/[0.035] hover:text-[var(--color-text)]"
         }`}
         style={{ paddingLeft: `${depth * 14 + 10}px` }}
         onClick={handleClick}
@@ -43,12 +43,12 @@ function TreeNode({ entry, depth }: { entry: FileEntry; depth: number }) {
         title={entry.path}
       >
         {isActive && (
-          <span className="absolute inset-y-[3px] left-0 w-[2px] rounded-r bg-[var(--color-iris-hi)]" />
+          <span className="absolute inset-y-[3px] left-0 w-[2px] rounded-r bg-[var(--color-accent)]" />
         )}
         {entry.isDir ? (
           <IconChevronRight
             size={11}
-            className={`shrink-0 text-[var(--color-mute)] transition-transform duration-150 ${
+            className={`shrink-0 text-[var(--color-text-muted)] transition-transform duration-150 ${
               isOpen ? "rotate-90" : ""
             }`}
           />
@@ -57,7 +57,7 @@ function TreeNode({ entry, depth }: { entry: FileEntry; depth: number }) {
         )}
         <span
           className={`shrink-0 ${
-            entry.isDir ? "text-[var(--color-iris-hi)]" : ""
+            entry.isDir ? "text-[var(--color-text-secondary)]" : ""
           }`}
         >
           {entry.isDir ? <FolderGlyph open={isOpen} /> : <FileGlyph entry={entry} />}
@@ -78,7 +78,7 @@ export default function FileTree({ dirPath, depth }: FileTreeProps) {
   if (!entries) {
     return (
       <div
-        className="py-1 text-sm text-[var(--color-faint)]"
+        className="py-1 text-sm text-[var(--color-text-disabled)]"
         style={{ paddingLeft: `${depth * 14 + 27}px` }}
       >
         加载中…
@@ -89,7 +89,7 @@ export default function FileTree({ dirPath, depth }: FileTreeProps) {
   if (entries.length === 0) {
     return (
       <div
-        className="py-1 text-sm text-[var(--color-faint)]"
+        className="py-1 text-sm text-[var(--color-text-disabled)]"
         style={{ paddingLeft: `${depth * 14 + 27}px` }}
       >
         空文件夹

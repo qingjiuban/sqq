@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { IconCheck, IconCopy } from "../ui/icons";
 
 /** Inline formatting: `code`, **bold**, *italic*, [text](url). */
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
@@ -17,14 +18,14 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
       nodes.push(
         <code
           key={key}
-          className="rounded bg-black/40 px-1 py-0.5 font-mono text-[0.86em] text-[#c8b6ff]"
+          className="rounded-[4px] bg-[var(--color-surface-raised)] px-1 py-0.5 font-mono text-[0.86em] text-[var(--color-accent-text)]"
         >
           {token.slice(1, -1)}
         </code>,
       );
     } else if (token.startsWith("**")) {
       nodes.push(
-        <strong key={key} className="font-semibold text-[var(--color-fg)]">
+        <strong key={key} className="font-semibold text-[var(--color-text)]">
           {token.slice(2, -2)}
         </strong>,
       );
@@ -37,7 +38,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
             href={linkMatch[2]}
             target="_blank"
             rel="noreferrer"
-            className="text-[var(--color-iris-hi)] underline decoration-dotted underline-offset-2"
+            className="text-[var(--color-accent-text)] underline decoration-dotted underline-offset-2"
           >
             {linkMatch[1]}
           </a>,
@@ -47,7 +48,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
       }
     } else {
       nodes.push(
-        <em key={key} className="italic text-[var(--color-dim)]">
+        <em key={key} className="italic text-[var(--color-text-secondary)]">
           {token.slice(1, -1)}
         </em>,
       );
@@ -60,16 +61,44 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
 }
 
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard unavailable; ignore
+    }
+  };
+
   return (
-    <div className="my-1.5 overflow-hidden rounded-lg border border-[var(--color-line)] bg-[#08090d]">
-      {lang && (
-        <div className="flex items-center justify-between border-b border-[var(--color-line-soft)] px-2.5 py-1">
-          <span className="font-mono text-[10px] tracking-wide text-[var(--color-mute)] uppercase">
-            {lang}
-          </span>
-        </div>
-      )}
-      <pre className="overflow-x-auto p-2.5 font-mono text-[11.5px] leading-relaxed text-[#d7dbe8]">
+    <div className="my-2 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--color-border-subtle)] bg-[var(--color-canvas)]">
+      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-2.5 py-1">
+        <span className="font-mono text-[10px] tracking-wide text-[var(--color-text-muted)]">
+          {lang || "text"}
+        </span>
+        <button
+          className="flex items-center gap-1 rounded-[var(--radius-xs)] px-1.5 py-0.5 text-[10px] text-[var(--color-text-muted)] transition-colors hover:bg-white/[0.06] hover:text-[var(--color-text)]"
+          onClick={copy}
+          title="复制代码"
+          aria-label="复制代码"
+        >
+          {copied ? (
+            <>
+              <IconCheck size={11} className="text-[var(--color-success)]" />
+              已复制
+            </>
+          ) : (
+            <>
+              <IconCopy size={11} />
+              复制
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-2.5 font-mono text-[11.5px] leading-relaxed text-[var(--color-text)]">
         <code>{code}</code>
       </pre>
     </div>
@@ -100,7 +129,7 @@ function renderBlocks(text: string): ReactNode[] {
       blocks.push(
         <Tag
           key={key}
-          className={`my-1 space-y-0.5 pl-4 ${ordered ? "list-decimal" : "list-disc"} marker:text-[var(--color-mute)]`}
+          className={`my-1 space-y-0.5 pl-4 ${ordered ? "list-decimal" : "list-disc"} marker:text-[var(--color-text-muted)]`}
         >
           {list.map((item, i) => (
             <li key={i}>{renderInline(item, `${key}-${i}`)}</li>
@@ -133,8 +162,8 @@ function renderBlocks(text: string): ReactNode[] {
         blocks.push(
           <div
             key={`h-${partIndex}-${lineIndex}`}
-            className={`mt-2 mb-0.5 font-semibold text-[var(--color-fg)] ${
-              level <= 2 ? "text-[14px]" : "text-[13px]"
+            className={`mt-2.5 mb-1 font-semibold text-[var(--color-text)] ${
+              level <= 2 ? "text-md" : "text-base"
             }`}
           >
             {renderInline(heading[2], `h-${partIndex}-${lineIndex}`)}
@@ -148,7 +177,7 @@ function renderBlocks(text: string): ReactNode[] {
         blocks.push(
           <blockquote
             key={`q-${partIndex}-${lineIndex}`}
-            className="my-1 border-l-2 border-[var(--color-line)] pl-2.5 text-[var(--color-dim)]"
+            className="my-1 border-l-2 border-[var(--color-border-strong)] pl-2.5 text-[var(--color-text-secondary)]"
           >
             {renderInline(quote[1], `q-${partIndex}-${lineIndex}`)}
           </blockquote>,

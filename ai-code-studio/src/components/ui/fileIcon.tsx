@@ -55,7 +55,7 @@ export function fileTint(name: string): string | undefined {
 /** Document glyph used for files. */
 export function FileGlyph({ entry }: { entry: FileEntry }) {
   const tint = fileTint(entry.name);
-  const color = tint ?? "var(--color-mute)";
+  const color = tint ?? "var(--color-text-muted)";
   return (
     <svg
       width="15"
