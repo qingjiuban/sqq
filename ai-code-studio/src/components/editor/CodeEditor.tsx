@@ -2,6 +2,7 @@ import Editor from "@monaco-editor/react";
 import { useShallow } from "zustand/react/shallow";
 import { useProjectStore } from "../../store/projectStore";
 import { languageFromPath } from "../../lib/api";
+import { IconCode } from "../ui/icons";
 
 export default function CodeEditor() {
   const { tabs, activePath, updateActiveContent } = useProjectStore(
@@ -15,19 +16,18 @@ export default function CodeEditor() {
 
   if (!activeTab) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 bg-[var(--color-ink)]">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" className="text-[var(--color-line)]">
-          <path
-            d="M8 4h8l4 4v12H8V4Z"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          />
-          <path d="M16 4v4h4" stroke="currentColor" strokeWidth="1.4" />
-        </svg>
-        <span className="text-[12px] text-[var(--color-mute)]">
-          Select a file to start editing
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[var(--color-ink)]">
+        <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-[var(--color-panel)] text-[var(--color-faint)]">
+          <IconCode size={20} />
         </span>
+        <div className="flex flex-col items-center gap-1 text-center">
+          <span className="text-sm font-medium text-[var(--color-dim)]">
+            No file open
+          </span>
+          <span className="text-xs text-[var(--color-mute)]">
+            Pick a file from the explorer to start editing
+          </span>
+        </div>
       </div>
     );
   }

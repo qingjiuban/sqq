@@ -1,38 +1,51 @@
 import type { Message as MessageType } from "../../types/model";
 import Markdown from "./Markdown";
 
+/**
+ * A conversation turn. User turns are compact bubbles; agent turns read as
+ * content on the surface with a quiet speaker label, no heavy card.
+ */
 export default function Message({ message }: { message: MessageType }) {
   const isUser = message.role === "user";
   const isSystem = message.role === "system";
 
   if (isSystem) {
     return (
-      <div className="rounded-lg border border-[var(--color-warn)]/25 bg-[var(--color-warn)]/[0.07] px-3 py-2 text-[12.5px] whitespace-pre-wrap text-[#f3d9a4]">
+      <div className="animate-fade-in flex gap-2 rounded-[var(--radius-card)] bg-[color-mix(in_srgb,var(--color-warn)_8%,transparent)] px-3 py-2 text-sm whitespace-pre-wrap text-[#e8cf9a]">
         {message.content}
       </div>
     );
   }
 
+  if (isUser) {
+    return (
+      <div className="animate-fade-in flex flex-col items-end gap-1">
+        <span className="eyebrow px-1">You</span>
+        <div className="max-w-[88%] rounded-[var(--radius-card)] rounded-br-[4px] bg-[var(--color-float)] px-3 py-2 text-sm whitespace-pre-wrap text-[var(--color-fg)]">
+          {message.content}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}>
-      <span className="px-1 text-[10px] font-semibold tracking-wide text-[var(--color-mute)] uppercase">
-        {isUser ? "You" : "Agent"}
-      </span>
-      <div
-        className={`max-w-[92%] rounded-xl px-3 py-2 ${
-          isUser
-            ? "rounded-br-sm bg-gradient-to-b from-[#7c6cff] to-[#6250e6] text-[13px] text-white shadow-[0_6px_18px_-10px_rgba(109,94,252,0.9)] whitespace-pre-wrap"
-            : "rounded-bl-sm border border-[var(--color-line)] bg-[var(--color-raised)] text-[var(--color-fg)]"
-        }`}
-      >
+    <div className="animate-fade-in flex flex-col gap-1">
+      <span className="eyebrow px-1">Agent</span>
+      <div className="text-sm text-[var(--color-fg)]">
         {message.content ? (
-          isUser ? (
-            message.content
-          ) : (
-            <Markdown content={message.content} />
-          )
+          <Markdown content={message.content} />
         ) : (
-          <span className="text-[var(--color-mute)]">…</span>
+          <span className="inline-flex gap-1 py-0.5" aria-label="Generating">
+            <span className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-mute)]" />
+            <span
+              className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-mute)]"
+              style={{ animationDelay: "150ms" }}
+            />
+            <span
+              className="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-[var(--color-mute)]"
+              style={{ animationDelay: "300ms" }}
+            />
+          </span>
         )}
       </div>
     </div>

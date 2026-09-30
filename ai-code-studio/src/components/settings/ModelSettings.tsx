@@ -2,11 +2,33 @@ import { useState } from "react";
 import { useModelStore } from "../../store/modelStore";
 import AgentSettings from "./AgentSettings";
 import ProviderForm from "./ProviderForm";
+import {
+  IconAgent,
+  IconClose,
+  IconPlug,
+  IconPlus,
+  IconTrash,
+} from "../ui/icons";
+import { StatusDot } from "../ui/Status";
 
+type Section = "models" | "agent";
+
+const TYPE_LABEL: Record<string, string> = {
+  "openai-compatible": "OpenAI Compatible",
+  anthropic: "Anthropic",
+  ollama: "Ollama",
+  "custom-http": "Custom HTTP",
+};
+
+/**
+ * Settings workspace: a left rail for sections, then section content. Provider
+ * management is a list + detail split, so the model is never hidden behind a
+ * form.
+ */
 export default function ModelSettings({ onClose }: { onClose: () => void }) {
   const { providers, activeId, setActive, removeProvider } = useModelStore();
-  const [tab, setTab] = useState<"providers" | "agent">("providers");
-  const [editingId, setEditingId] = useState<string | "new" | null>(
+  const [section, setSection] = useState<Section>("models");
+  const [editingId, setEditingId] = useState<string | "new">(
     providers.length ? providers[0].id : "new",
   );
 
@@ -17,127 +39,166 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="flex h-[min(640px,92vh)] w-[min(920px,96vw)] overflow-hidden rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)]">
-        <div className="flex w-60 shrink-0 flex-col border-r border-[var(--color-line-soft)] bg-[var(--color-ink)]">
-          <div className="flex h-12 items-center px-3">
-            <span className="panel-title">Settings</span>
+      <div className="animate-pop-in flex h-[min(660px,92vh)] w-[min(1000px,96vw)] overflow-hidden rounded-[var(--radius-modal)] border border-[var(--color-line)] bg-[var(--color-panel)] shadow-[var(--shadow-modal)]">
+        {/* Rail */}
+        <div className="flex w-52 shrink-0 flex-col border-r border-[var(--color-line-soft)] bg-[var(--color-ink)] py-3">
+          <div className="px-4 pb-3">
+            <span className="text-md font-semibold tracking-tight">Settings</span>
           </div>
-          <div className="mx-2 mb-2 flex items-center gap-0.5 rounded-lg border border-[var(--color-line)] bg-[var(--color-panel)] p-0.5">
-            {(["providers", "agent"] as const).map((value) => (
+          {(
+            [
+              { value: "models", label: "Models", icon: <IconPlug size={15} /> },
+              { value: "agent", label: "Agent", icon: <IconAgent size={15} /> },
+            ] as const
+          ).map((item) => {
+            const active = section === item.value;
+            return (
               <button
-                key={value}
-                className={`flex-1 rounded-[6px] px-2 py-1 text-[11px] font-medium capitalize transition-colors ${
-                  tab === value
-                    ? "bg-[var(--color-iris-deep)] text-[#c9c2ff]"
-                    : "text-[var(--color-mute)] hover:text-[var(--color-dim)]"
+                key={item.value}
+                className={`mx-2 flex items-center gap-2.5 rounded-[var(--radius-btn)] px-2.5 py-2 text-left text-sm transition-colors ${
+                  active
+                    ? "bg-[var(--color-raised)] text-[var(--color-fg)]"
+                    : "text-[var(--color-dim)] hover:bg-white/[0.04] hover:text-[var(--color-fg)]"
                 }`}
-                onClick={() => setTab(value)}
+                onClick={() => setSection(item.value)}
               >
-                {value}
+                <span className="text-[var(--color-mute)]">{item.icon}</span>
+                {item.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          {tab === "providers" ? (
-            <>
-              <div className="flex-1 overflow-y-auto px-2">
-                {providers.length === 0 && (
-                  <div className="px-2 py-3 text-[11px] text-[var(--color-mute)]">
-                    No providers yet.
-                  </div>
-                )}
-                {providers.map((provider) => (
-                  <button
-                    key={provider.id}
-                    className={`mb-0.5 flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left text-[12.5px] transition-colors ${
-                      provider.id === editingId
-                        ? "bg-[var(--color-iris-deep)] text-[#d6d0ff]"
-                        : "text-[var(--color-dim)] hover:bg-white/[0.04]"
-                    }`}
-                    onClick={() => setEditingId(provider.id)}
-                  >
-                    <span className="truncate">{provider.name}</span>
-                    {provider.id === activeId && (
-                      <span className="chip bg-[var(--color-ok)]/15 text-[var(--color-ok)]">
-                        active
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <div className="flex flex-col gap-1.5 border-t border-[var(--color-line-soft)] p-2">
+        {/* Content */}
+        {section === "models" ? (
+          <div className="flex min-w-0 flex-1">
+            {/* Provider list */}
+            <div className="flex w-64 shrink-0 flex-col border-r border-[var(--color-line-soft)]">
+              <div className="flex h-12 shrink-0 items-center justify-between px-3">
+                <span className="section-label">Your providers</span>
                 <button
-                  className="btn btn-outline w-full"
+                  className="btn-icon"
                   onClick={() => setEditingId("new")}
+                  title="Add provider"
+                  aria-label="Add provider"
                 >
-                  + Add Provider
+                  <IconPlus size={15} />
                 </button>
-                {editing && (
-                  <div className="flex gap-1.5">
-                    <button
-                      className="btn btn-outline flex-1"
-                      onClick={() => setActive(editing.id)}
-                    >
-                      Set Active
-                    </button>
-                    <button
-                      className="btn border border-[var(--color-err)]/40 text-[var(--color-err)] hover:bg-[var(--color-err)]/10"
-                      onClick={() => {
-                        removeProvider(editing.id);
-                        setEditingId("new");
-                      }}
-                    >
-                      Delete
-                    </button>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+                {providers.length === 0 && (
+                  <div className="px-2 py-3 text-xs text-[var(--color-mute)]">
+                    No providers yet. Add one to get started.
                   </div>
                 )}
+                {providers.map((provider) => {
+                  const isEditing = provider.id === editingId;
+                  const isActive = provider.id === activeId;
+                  return (
+                    <div
+                      key={provider.id}
+                      className={`group mb-1 flex cursor-pointer items-center gap-2.5 rounded-[var(--radius-card)] px-2.5 py-2 transition-colors ${
+                        isEditing
+                          ? "bg-[var(--color-raised)]"
+                          : "hover:bg-white/[0.04]"
+                      }`}
+                      onClick={() => setEditingId(provider.id)}
+                    >
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[8px] bg-[var(--color-float)] text-xs font-semibold text-[var(--color-dim)]">
+                        {provider.name.slice(0, 1).toUpperCase()}
+                      </span>
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <span className="truncate text-sm text-[var(--color-fg)]">
+                          {provider.name}
+                        </span>
+                        <span className="truncate text-xs text-[var(--color-mute)]">
+                          {provider.model}
+                        </span>
+                      </div>
+                      {isActive ? (
+                        <StatusDot tone="ok" />
+                      ) : (
+                        <button
+                          className="hidden shrink-0 text-[var(--color-mute)] group-hover:block hover:text-[var(--color-fg)]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeProvider(provider.id);
+                            if (editingId === provider.id) setEditingId("new");
+                          }}
+                          title="Delete provider"
+                          aria-label="Delete provider"
+                        >
+                          <IconTrash size={14} />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            </>
-          ) : (
-            <div className="flex-1 overflow-y-auto">
+              {editing && (
+                <div className="border-t border-[var(--color-line-soft)] p-2">
+                  <button
+                    className="btn btn-outline w-full"
+                    onClick={() => setActive(editing.id)}
+                    disabled={editing.id === activeId}
+                  >
+                    {editing.id === activeId ? "Active" : "Set as active"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Detail */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] px-4">
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-md font-medium">
+                    {editingId === "new"
+                      ? "New provider"
+                      : editing?.name ?? "Provider"}
+                  </span>
+                  {editing && (
+                    <span className="truncate text-xs text-[var(--color-mute)]">
+                      {TYPE_LABEL[editing.type] ?? editing.type}
+                    </span>
+                  )}
+                </div>
+                <button
+                  className="btn-icon"
+                  onClick={onClose}
+                  title="Close"
+                  aria-label="Close settings"
+                >
+                  <IconClose size={15} />
+                </button>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <ProviderForm
+                  key={editingId}
+                  initial={editing}
+                  onDone={() => setEditingId(editing?.id ?? "new")}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] px-4">
+              <span className="text-md font-medium">Agent behaviour</span>
+              <button
+                className="btn-icon"
+                onClick={onClose}
+                title="Close"
+                aria-label="Close settings"
+              >
+                <IconClose size={15} />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto">
               <AgentSettings />
             </div>
-          )}
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] px-4">
-            <span className="text-[13px] font-medium text-[var(--color-fg)]">
-              {tab === "agent"
-                ? "Agent behaviour"
-                : editingId === "new"
-                  ? "New Provider"
-                  : editing?.name}
-            </span>
-            <button className="btn btn-icon" onClick={onClose} title="Close">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path
-                  d="M4 4l8 8M12 4l-8 8"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </button>
           </div>
-          <div className="min-h-0 flex-1">
-            {tab === "agent" ? (
-              <div className="p-4 text-[12px] leading-relaxed text-[var(--color-dim)]">
-                These settings control how the agent is allowed to act and whether
-                it verifies its own changes. Permission level caps which tool
-                classes can run; the approval mode decides when you are asked.
-                Auto-verify runs the project's typecheck/build/test after the
-                agent edits files and feeds failures back for repair.
-              </div>
-            ) : (
-              <ProviderForm
-                key={editingId ?? "new"}
-                initial={editing}
-                onDone={() => setEditingId(editing?.id ?? "new")}
-              />
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

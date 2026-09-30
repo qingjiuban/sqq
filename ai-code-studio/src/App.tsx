@@ -8,6 +8,7 @@ import ChatPanel from "./components/chat/ChatPanel";
 import TerminalPanel from "./components/terminal/TerminalPanel";
 import PreviewPanel from "./components/preview/PreviewPanel";
 import ModelSettings from "./components/settings/ModelSettings";
+import { BrandMark, IconSettings, IconTerminal } from "./components/ui/icons";
 import { useProjectStore } from "./store/projectStore";
 import { useTerminalStore } from "./store/terminalStore";
 import { usePreviewStore } from "./store/previewStore";
@@ -16,14 +17,10 @@ import { useMediaQuery } from "./lib/useMediaQuery";
 type ViewMode = "editor" | "preview";
 type MobileTab = "files" | "code" | "chat" | "preview";
 
-function BrandMark() {
-  return (
-    <span className="relative grid h-6 w-6 place-items-center rounded-[7px] bg-gradient-to-br from-[#8a7dff] to-[#5b4bd6] text-[11px] font-bold text-white shadow-[0_4px_14px_-4px_rgba(109,94,252,0.9)]">
-      ◆
-    </span>
-  );
-}
-
+/**
+ * Two-option segmented switch. Lives in the command bar; the active option is
+ * marked by a raised pill rather than a colored block.
+ */
 function SegmentedControl<T extends string>({
   value,
   options,
@@ -34,20 +31,23 @@ function SegmentedControl<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div className="flex items-center gap-0.5 rounded-lg border border-[var(--color-line)] bg-[var(--color-panel)] p-0.5">
-      {options.map((option) => (
-        <button
-          key={option.value}
-          className={`rounded-[6px] px-2.5 py-1 text-[11px] font-medium capitalize transition-colors ${
-            value === option.value
-              ? "bg-[var(--color-iris-deep)] text-[#c9c2ff]"
-              : "text-[var(--color-mute)] hover:text-[var(--color-dim)]"
-          }`}
-          onClick={() => onChange(option.value)}
-        >
-          {option.label}
-        </button>
-      ))}
+    <div className="flex items-center gap-0.5 rounded-[8px] bg-[var(--color-ink)] p-0.5">
+      {options.map((option) => {
+        const active = value === option.value;
+        return (
+          <button
+            key={option.value}
+            className={`rounded-[6px] px-3 py-1 text-xs font-medium transition-colors ${
+              active
+                ? "bg-[var(--color-float)] text-[var(--color-fg)]"
+                : "text-[var(--color-mute)] hover:text-[var(--color-dim)]"
+            }`}
+            onClick={() => onChange(option.value)}
+          >
+            {option.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -97,9 +97,10 @@ function MobileLayout({
 }
 
 export default function App() {
-  const { root, openProject, restoreProject, saveActive, isMobile } =
+  const { root, projectName, openProject, restoreProject, saveActive, isMobile } =
     useProjectStore();
-  const { toggle: toggleTerminal } = useTerminalStore();
+  const toggleTerminal = useTerminalStore((s) => s.toggle);
+  const terminalCount = useTerminalStore((s) => s.entries.length);
   const previewDetect = usePreviewStore((s) => s.detect);
   const previewReset = usePreviewStore((s) => s.reset);
   const [showSettings, setShowSettings] = useState(false);
@@ -138,17 +139,19 @@ export default function App() {
       <div className="flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--color-ink)] text-[var(--color-fg)]">
         <header className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
           <div className="flex items-center gap-2">
-            <BrandMark />
-            <span className="text-[13px] font-semibold tracking-tight">
+            <BrandMark size={22} />
+            <span className="text-md font-semibold tracking-tight">
               AI Code Studio
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
-              className="btn btn-outline"
+              className="btn-icon"
               onClick={() => setShowSettings(true)}
+              title="Settings"
+              aria-label="Settings"
             >
-              Settings
+              <IconSettings />
             </button>
             {root && !isMobile && (
               <button className="btn btn-primary" onClick={openProject}>
@@ -174,14 +177,28 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[var(--color-ink)] text-[var(--color-fg)]">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <BrandMark />
-            <span className="text-[13px] font-semibold tracking-tight">
-              AI Code Studio
-            </span>
-          </div>
+      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] pl-3 pr-2.5">
+        {/* Brand + project identity */}
+        <div className="flex min-w-0 items-center gap-2.5">
+          <BrandMark size={24} />
+          <span className="shrink-0 text-md font-semibold tracking-tight">
+            AI Code Studio
+          </span>
+          {root && (
+            <>
+              <span className="h-4 w-px shrink-0 bg-[var(--color-line)]" />
+              <span
+                className="max-w-52 truncate text-sm text-[var(--color-dim)]"
+                title={projectName}
+              >
+                {projectName || "Untitled"}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Center: primary view switch */}
+        <div className="flex flex-1 justify-center">
           {root && (
             <SegmentedControl
               value={view}
@@ -193,13 +210,31 @@ export default function App() {
             />
           )}
         </div>
-        <div className="flex items-center gap-1.5">
-          <button className="btn btn-ghost" onClick={toggleTerminal}>
-            Terminal
+
+        {/* Actions */}
+        <div className="flex shrink-0 items-center gap-1">
+          <button
+            className="btn-icon relative"
+            onClick={toggleTerminal}
+            title="Terminal"
+            aria-label="Terminal"
+          >
+            <IconTerminal />
+            {terminalCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-[var(--color-iris)] px-1 text-[9px] font-medium text-white">
+                {terminalCount}
+              </span>
+            )}
           </button>
-          <button className="btn btn-ghost" onClick={() => setShowSettings(true)}>
-            Settings
+          <button
+            className="btn-icon"
+            onClick={() => setShowSettings(true)}
+            title="Settings"
+            aria-label="Settings"
+          >
+            <IconSettings />
           </button>
+          <span className="mx-1 h-4 w-px bg-[var(--color-line)]" />
           <button className="btn btn-primary" onClick={openProject}>
             {root ? "Switch Project" : "Open Project"}
           </button>

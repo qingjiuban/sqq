@@ -1,42 +1,31 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePreviewStore } from "../../store/previewStore";
 import { isMobileOS } from "../../lib/platform";
+import {
+  IconExternal,
+  IconInfo,
+  IconPlay,
+  IconRefresh,
+  IconStop,
+} from "../ui/icons";
+import { StatusDot } from "../ui/Status";
 
-function StatusDot({ status }: { status: string }) {
-  const color =
-    status === "running"
-      ? "bg-[var(--color-ok)]"
-      : status === "starting" || status === "detecting"
-        ? "animate-pulse bg-[var(--color-warn)]"
-        : status === "error"
-          ? "bg-[var(--color-err)]"
-          : "bg-[var(--color-line)]";
-  return <span className={`h-1.5 w-1.5 rounded-full ${color}`} />;
-}
-
-const STATUS_TEXT: Record<string, string> = {
-  idle: "text-[var(--color-mute)]",
-  detecting: "text-[var(--color-iris-hi)]",
-  starting: "text-[var(--color-warn)]",
-  running: "text-[var(--color-ok)]",
-  stopped: "text-[var(--color-mute)]",
-  error: "text-[var(--color-err)]",
+const DOT_TONE: Record<
+  string,
+  { tone: "idle" | "accent" | "ok" | "warn" | "err"; pulse?: boolean }
+> = {
+  idle: { tone: "idle" },
+  detecting: { tone: "accent", pulse: true },
+  starting: { tone: "warn", pulse: true },
+  running: { tone: "ok" },
+  stopped: { tone: "idle" },
+  error: { tone: "err" },
 };
 
 export default function PreviewPanel() {
-  const {
-    status,
-    plan,
-    url,
-    error,
-    output,
-    detect,
-    start,
-    stop,
-    refreshStatus,
-  } = usePreviewStore();
+  const { status, plan, url, error, output, detect, start, stop, refreshStatus } =
+    usePreviewStore();
   const [nonce, setNonce] = useState(0);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -47,13 +36,15 @@ export default function PreviewPanel() {
 
   const busy = status === "detecting" || status === "starting";
   const mobile = isMobileOS();
+  const dot = DOT_TONE[status] ?? { tone: "idle" as const };
 
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col bg-[var(--color-ink)]">
-      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
-        <StatusDot status={status} />
-        <span className="panel-title">Preview</span>
-        <span className={`text-[11px] ${STATUS_TEXT[status]}`}>
+      {/* Browser-style toolbar */}
+      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
+        <StatusDot tone={dot.tone} pulse={dot.pulse} />
+        <span className="text-sm font-medium">Preview</span>
+        <span className="truncate text-xs text-[var(--color-mute)]">
           {plan ? plan.label : "Not detected"}
           {status === "starting" && " · starting…"}
           {status === "detecting" && " · detecting…"}
@@ -63,21 +54,26 @@ export default function PreviewPanel() {
           {status === "running" && url && (
             <>
               <button
-                className="btn btn-ghost !px-2 !py-0.5"
+                className="btn-icon"
                 onClick={() => setNonce((n) => n + 1)}
+                title="Reload"
+                aria-label="Reload"
               >
-                Reload
+                <IconRefresh size={15} />
               </button>
               <button
-                className="btn btn-ghost !px-2 !py-0.5"
+                className="btn-icon"
                 onClick={() => window.open(url, "_blank")}
+                title="Open in browser"
+                aria-label="Open in browser"
               >
-                Open
+                <IconExternal size={15} />
               </button>
             </>
           )}
           {status === "running" ? (
             <button className="btn btn-outline" onClick={() => void stop()}>
+              <IconStop size={13} />
               Stop
             </button>
           ) : (
@@ -86,24 +82,18 @@ export default function PreviewPanel() {
               disabled={busy}
               onClick={() => void start()}
             >
-              {plan ? "Start" : "Detect & Start"}
+              <IconPlay size={13} />
+              {busy ? "Starting…" : plan ? "Start" : "Detect & Start"}
             </button>
           )}
           <button
-            className="btn btn-icon"
+            className="btn-icon"
             onClick={() => void detect()}
             disabled={busy}
             title="Re-detect project type"
+            aria-label="Re-detect project type"
           >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M13 8a5 5 0 1 1-1.6-3.7M13 2.5V5h-2.5"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <IconRefresh size={15} />
           </button>
         </div>
       </div>
@@ -111,29 +101,55 @@ export default function PreviewPanel() {
       {status === "running" && url ? (
         <iframe
           key={nonce}
-          ref={iframeRef}
           src={url}
           title="preview"
           className="min-h-0 flex-1 border-0 bg-white"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
         />
       ) : (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
           {error ? (
-            <div className="max-w-md text-[12px] text-[var(--color-err)]">
-              {error}
+            <div className="flex max-w-md flex-col items-center gap-2">
+              <StatusDot tone="err" />
+              <p className="text-sm text-[var(--color-err)]">{error}</p>
             </div>
           ) : (
-            <div className="max-w-md text-[12px] text-[var(--color-mute)]">
-              {plan
-                ? `Ready to start ${plan.label} on port ${plan.port}.`
-                : mobile
-                  ? "Preview on mobile renders HTML/SVG files directly. Ask the agent to create index.html."
-                  : "Open a project, then start a preview server."}
-            </div>
+            <>
+              <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[var(--color-panel)] text-[var(--color-faint)]">
+                <IconPlay size={22} />
+              </span>
+              <div className="flex max-w-sm flex-col items-center gap-1.5">
+                <span className="text-md font-medium text-[var(--color-dim)]">
+                  Preview isn't running
+                </span>
+                <span className="text-sm text-[var(--color-mute)]">
+                  {mobile
+                    ? "On mobile, HTML and SVG files render directly. Ask the agent to create an index.html."
+                    : plan
+                      ? "Start the local preview server to see your application here."
+                      : "Open a project, then start a preview server."}
+                </span>
+                {plan && (
+                  <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-[var(--color-faint)]">
+                    <IconInfo size={12} />
+                    {plan.label} · port {plan.port}
+                  </span>
+                )}
+              </div>
+              {!mobile && (
+                <button
+                  className="btn btn-primary"
+                  disabled={busy}
+                  onClick={() => void start()}
+                >
+                  <IconPlay size={13} />
+                  {busy ? "Starting…" : "Start Preview"}
+                </button>
+              )}
+            </>
           )}
           {output.trim() && (
-            <pre className="max-h-40 w-full max-w-2xl overflow-auto rounded-lg border border-[var(--color-line)] bg-[#08090d] p-3 text-left font-mono text-[11px] text-[var(--color-dim)]">
+            <pre className="max-h-40 w-full max-w-2xl overflow-auto rounded-[var(--radius-card)] bg-[var(--color-panel)] p-3 text-left font-mono text-xs leading-relaxed text-[var(--color-dim)]">
               {output.trimEnd()}
             </pre>
           )}

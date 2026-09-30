@@ -16,6 +16,7 @@ ai-code-studio/src-tauri/gen/schemas/
 
 # Packaged source archives
 *.tar.gz
+ui-redesign-pack.zip
 
 # Logs and local env
 *.log

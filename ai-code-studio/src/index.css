@@ -2,24 +2,73 @@
 
 /* --------------------------------------------------------------------------
    Design tokens
-   A single dark palette with layered surfaces, a proper text ramp and one
-   vivid accent (iris). Everything in the UI reads from these.
+
+   Layered dark surfaces, a restrained text ramp and a single refined indigo
+   accent. The accent is reserved for state, focus, primary actions and agent
+   activity — never used as decoration. Everything in the UI reads from here.
    -------------------------------------------------------------------------- */
 @theme {
-  --color-ink: #0a0b0f;
-  --color-panel: #0f1117;
-  --color-raised: #151822;
-  --color-line: #222634;
-  --color-line-soft: #1a1e29;
-  --color-fg: #e7e9f0;
-  --color-dim: #98a0b3;
-  --color-mute: #636b7e;
-  --color-iris: #6d5efc;
-  --color-iris-hi: #8a7dff;
-  --color-iris-deep: #2a2547;
-  --color-ok: #3ddc97;
-  --color-warn: #f2b544;
-  --color-err: #ff6b6b;
+  /* Surface ramp: app -> surface -> elevated -> floating */
+  --color-ink: #0a0c10;
+  --color-panel: #0f1217;
+  --color-raised: #14181f;
+  --color-float: #1a1f28;
+
+  /* Hairlines. Borders are supporting information, not structure. */
+  --color-line: #1f242f;
+  --color-line-soft: #171b23;
+  --color-line-strong: #2b3240;
+
+  /* Text ramp */
+  --color-fg: #e6e9f0;
+  --color-dim: #98a0b0;
+  --color-mute: #666d7c;
+  --color-faint: #464c58;
+
+  /* Accent — refined indigo, blue-leaning so it reads as product, not "AI purple" */
+  --color-iris: #6c70f0;
+  --color-iris-hi: #8f92ff;
+  --color-iris-deep: #232447;
+  --color-iris-ink: #c3c6ff;
+
+  /* Semantic */
+  --color-ok: #3ecf8e;
+  --color-warn: #e6b04a;
+  --color-err: #f2555a;
+  --color-info: #5aa9f5;
+
+  /* Type scale — one ramp, no random sizes */
+  --text-2xs: 10px;
+  --text-2xs--line-height: 14px;
+  --text-xs: 11px;
+  --text-xs--line-height: 15px;
+  --text-sm: 12px;
+  --text-sm--line-height: 17px;
+  --text-base: 13px;
+  --text-base--line-height: 19px;
+  --text-md: 14px;
+  --text-md--line-height: 20px;
+  --text-lg: 16px;
+  --text-lg--line-height: 23px;
+  --text-xl: 18px;
+  --text-xl--line-height: 25px;
+  --text-2xl: 22px;
+  --text-2xl--line-height: 28px;
+  --text-3xl: 26px;
+  --text-3xl--line-height: 32px;
+
+  /* Radius ladder */
+  --radius-xs: 5px;
+  --radius-sm: 6px;
+  --radius-btn: 7px;
+  --radius-input: 8px;
+  --radius-card: 10px;
+  --radius-panel: 12px;
+  --radius-modal: 16px;
+
+  /* Shadows — only for floating layers */
+  --shadow-pop: 0 10px 34px -12px rgba(0, 0, 0, 0.7);
+  --shadow-modal: 0 30px 80px -30px rgba(0, 0, 0, 0.85);
 
   --font-sans:
     ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -44,8 +93,8 @@
     background: var(--color-ink);
     color: var(--color-fg);
     font-family: var(--font-sans);
-    font-size: 13px;
-    line-height: 1.55;
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overscroll-behavior: none;
@@ -53,7 +102,7 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-iris) 38%, transparent);
+    background: color-mix(in srgb, var(--color-iris) 34%, transparent);
   }
 
   * {
@@ -71,17 +120,18 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #262c3a;
+    background: #232936;
     border: 3px solid transparent;
     background-clip: content-box;
     border-radius: 999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #39415a;
+    background: #333b4d;
     background-clip: content-box;
   }
 
+  /* Prevent iOS zoom on focus without shrinking text on desktop. */
   input,
   textarea,
   select {
@@ -95,56 +145,67 @@
       font-size: inherit;
     }
   }
+
+  button {
+    font-family: inherit;
+  }
 }
 
 /* --------------------------------------------------------------------------
    Component primitives
    -------------------------------------------------------------------------- */
 @layer components {
+  /* ---- Buttons ---------------------------------------------------------- */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 0 10px;
+    height: 30px;
+    border-radius: var(--radius-btn);
+    font-size: var(--text-sm);
     font-weight: 500;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
+    user-select: none;
     transition:
       background-color 0.15s ease,
       border-color 0.15s ease,
       color 0.15s ease,
-      box-shadow 0.15s ease;
+      box-shadow 0.15s ease,
+      opacity 0.15s ease;
     outline: none;
   }
 
   .btn:focus-visible {
-    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px
-      color-mix(in srgb, var(--color-iris) 60%, transparent);
+    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 3.5px
+      color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
 
   .btn:disabled {
-    opacity: 0.45;
+    opacity: 0.4;
     pointer-events: none;
   }
 
   .btn-primary {
-    background: linear-gradient(
-      180deg,
-      var(--color-iris-hi),
-      var(--color-iris)
-    );
+    background: var(--color-iris);
     color: #fff;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.16),
-      0 6px 18px -8px rgba(109, 94, 252, 0.9);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
 
   .btn-primary:hover {
-    filter: brightness(1.08);
+    background: var(--color-iris-hi);
+  }
+
+  .btn-secondary {
+    background: var(--color-float);
+    color: var(--color-fg);
+  }
+
+  .btn-secondary:hover {
+    background: #212734;
   }
 
   .btn-outline {
@@ -154,9 +215,9 @@
   }
 
   .btn-outline:hover {
-    border-color: #313749;
+    border-color: var(--color-line-strong);
     color: var(--color-fg);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .btn-ghost {
@@ -166,69 +227,221 @@
 
   .btn-ghost:hover {
     color: var(--color-fg);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
   }
 
+  .btn-danger {
+    border: 1px solid color-mix(in srgb, var(--color-err) 35%, transparent);
+    color: var(--color-err);
+    background: transparent;
+  }
+
+  .btn-danger:hover {
+    background: color-mix(in srgb, var(--color-err) 10%, transparent);
+    border-color: color-mix(in srgb, var(--color-err) 55%, transparent);
+  }
+
+  /* Square icon-only control. */
   .btn-icon {
-    padding: 5px;
-    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    width: 28px;
+    border-radius: var(--radius-btn);
     color: var(--color-mute);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+    outline: none;
   }
 
   .btn-icon:hover {
     color: var(--color-fg);
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.06);
   }
 
+  .btn-icon:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 3.5px
+      color-mix(in srgb, var(--color-iris) 70%, transparent);
+  }
+
+  .btn-icon:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* ---- Inputs ----------------------------------------------------------- */
   .input {
     width: 100%;
+    height: 32px;
     border: 1px solid var(--color-line);
-    border-radius: 8px;
-    background: var(--color-panel);
-    padding: 7px 9px;
+    border-radius: var(--radius-input);
+    background: var(--color-ink);
+    padding: 0 10px;
     color: var(--color-fg);
     outline: none;
     transition:
       border-color 0.15s ease,
-      box-shadow 0.15s ease;
+      box-shadow 0.15s ease,
+      background-color 0.15s ease;
   }
 
   .input::placeholder {
-    color: var(--color-mute);
+    color: var(--color-faint);
+  }
+
+  .input:hover {
+    border-color: var(--color-line-strong);
   }
 
   .input:focus {
-    border-color: color-mix(in srgb, var(--color-iris) 65%, transparent);
+    border-color: color-mix(in srgb, var(--color-iris) 70%, transparent);
     box-shadow: 0 0 0 3px
-      color-mix(in srgb, var(--color-iris) 18%, transparent);
+      color-mix(in srgb, var(--color-iris) 16%, transparent);
   }
 
-  .label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-mute);
+  textarea.input {
+    height: auto;
+    padding: 8px 10px;
+    line-height: 1.55;
+    resize: none;
   }
 
-  .panel-title {
+  /* ---- Labels ----------------------------------------------------------- */
+  /* Section heading inside a panel. Sentence case, no letter-spacing noise. */
+  .section-label {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 10px;
+    font-size: var(--text-xs);
     font-weight: 600;
-    letter-spacing: 0.1em;
+    color: var(--color-dim);
+  }
+
+  /* Form field label. */
+  .field-label {
+    display: block;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-mute);
+  }
+
+  /* Uppercase micro-label. Used sparingly, only for true metadata rows. */
+  .eyebrow {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-mute);
   }
 
+  /* ---- Chips / badges --------------------------------------------------- */
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
+    height: 20px;
     border-radius: 999px;
-    padding: 2px 7px;
-    font-size: 10px;
+    padding: 0 8px;
+    font-size: var(--text-xs);
     font-weight: 500;
+    color: var(--color-dim);
+    background: var(--color-raised);
+  }
+
+  .chip-ok {
+    color: var(--color-ok);
+    background: color-mix(in srgb, var(--color-ok) 12%, transparent);
+  }
+
+  .chip-warn {
+    color: var(--color-warn);
+    background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+  }
+
+  .chip-err {
+    color: var(--color-err);
+    background: color-mix(in srgb, var(--color-err) 12%, transparent);
+  }
+
+  .chip-accent {
+    color: var(--color-iris-ink);
+    background: color-mix(in srgb, var(--color-iris) 16%, transparent);
+  }
+
+  /* ---- Panels ----------------------------------------------------------- */
+  /* A raised content container. Used instead of another border grid. */
+  .panel {
+    border-radius: var(--radius-panel);
+    background: var(--color-panel);
+  }
+
+  .panel-raised {
+    border-radius: var(--radius-card);
+    background: var(--color-raised);
+  }
+
+  /* Thin divider between rows without drawing a full grid. */
+  .divide-soft > * + * {
+    border-top: 1px solid var(--color-line-soft);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Motion
+   -------------------------------------------------------------------------- */
+@keyframes acs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes acs-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes acs-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-fade-in {
+  animation: acs-fade-in 0.18s ease-out;
+}
+
+.animate-pop-in {
+  animation: acs-pop-in 0.16s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: acs-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
