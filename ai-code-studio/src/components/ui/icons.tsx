@@ -121,6 +121,14 @@ export function IconChevronRight(props: IconProps) {
   );
 }
 
+export function IconChevronLeft(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M10 3.5 5.5 8 10 12.5" />
+    </Icon>
+  );
+}
+
 export function IconChevronDown(props: IconProps) {
   return (
     <Icon {...props}>

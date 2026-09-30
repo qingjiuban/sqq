@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "./components/layout/Sidebar";
 import MobileShell, { TAB_ICONS } from "./components/layout/MobileShell";
 import AppHeader, { type ViewMode } from "./components/layout/AppHeader";
@@ -71,6 +71,8 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [view, setView] = useState<ViewMode>("editor");
   const isNarrow = useMediaQuery("(max-width: 767px)");
+  const showSettingsRef = useRef(showSettings);
+  showSettingsRef.current = showSettings;
 
   useEffect(() => {
     restoreProject();
@@ -83,6 +85,18 @@ export default function App() {
       previewReset();
     }
   }, [root, previewDetect, previewReset]);
+
+  useEffect(() => {
+    history.pushState(null, "");
+    const onPopState = () => {
+      if (showSettingsRef.current) {
+        setShowSettings(false);
+        history.pushState(null, "");
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

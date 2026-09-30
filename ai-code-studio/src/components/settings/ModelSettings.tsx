@@ -5,6 +5,8 @@ import ProviderForm from "./ProviderForm";
 import {
   IconAgent,
   IconCheck,
+  IconChevronLeft,
+  IconChevronRight,
   IconClose,
   IconPlug,
   IconPlus,
@@ -34,6 +36,7 @@ const SECTIONS: { value: Section; label: string; icon: React.ReactNode }[] = [
 export default function ModelSettings({ onClose }: { onClose: () => void }) {
   const { providers, activeId, setActive, removeProvider } = useModelStore();
   const [section, setSection] = useState<Section>("models");
+  const [mobilePane, setMobilePane] = useState<"sections" | "providers" | "detail">("sections");
   const [editingId, setEditingId] = useState<string | "new">(
     providers.length ? providers[0].id : "new",
   );
@@ -44,10 +47,10 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
       : providers.find((p) => p.id === editingId) ?? undefined;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="animate-pop-in flex h-[min(680px,92vh)] w-[min(1040px,96vw)] overflow-hidden rounded-[var(--radius-modal)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-modal)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:p-6">
+      <div className="animate-pop-in flex h-full w-full flex-col overflow-hidden rounded-[var(--radius-modal)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-modal)] md:h-[min(680px,92vh)] md:w-[min(1040px,96vw)]">
         {/* Rail */}
-        <div className="flex w-56 shrink-0 flex-col border-r border-[var(--color-border-subtle)] bg-[var(--color-canvas)] py-3">
+        <div className="hidden w-56 shrink-0 flex-col border-r border-[var(--color-border-subtle)] bg-[var(--color-canvas)] py-3 md:flex">
           <div className="px-4 pb-3">
             <span className="text-md font-semibold tracking-tight">设置</span>
           </div>
@@ -78,11 +81,80 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
           })}
         </div>
 
+        {/* Mobile top bar: back to section list, title, close */}
+        {mobilePane !== "sections" && (
+          <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-2 md:hidden">
+            <button
+              className="btn-icon"
+              onClick={() => setMobilePane("sections")}
+              title="返回"
+              aria-label="返回"
+            >
+              <IconChevronLeft size={16} />
+            </button>
+            <span className="text-md font-medium">
+              {section === "models" ? "模型与服务商" : "智能体"}
+            </span>
+            <button
+              className="btn-icon"
+              onClick={onClose}
+              title="关闭"
+              aria-label="关闭设置"
+            >
+              <IconClose size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* Mobile section list */}
+        {mobilePane === "sections" && (
+          <div className="flex min-h-0 flex-1 flex-col md:hidden">
+            <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-2">
+              <span className="text-md font-semibold">设置</span>
+              <button
+                className="btn-icon"
+                onClick={onClose}
+                title="关闭"
+                aria-label="关闭设置"
+              >
+                <IconClose size={16} />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto p-2">
+              {SECTIONS.map((item) => (
+                <button
+                  key={item.value}
+                  className="mb-1 flex w-full items-center gap-2.5 rounded-[var(--radius-btn)] px-2.5 py-2.5 text-left text-sm text-[var(--color-text)] transition-colors hover:bg-white/[0.04]"
+                  onClick={() => {
+                    setSection(item.value);
+                    setMobilePane("providers");
+                  }}
+                >
+                  <span className="text-[var(--color-text-muted)]">
+                    {item.icon}
+                  </span>
+                  <span className="flex-1">{item.label}</span>
+                  <IconChevronRight size={14} />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Content */}
+        <div
+          className={`min-h-0 flex-1 md:flex ${
+            mobilePane === "sections" ? "hidden" : "flex"
+          }`}
+        >
         {section === "models" ? (
-          <div className="flex min-w-0 flex-1">
+          <div className="flex min-h-0 min-w-0 flex-1">
             {/* Provider list */}
-            <div className="flex w-72 shrink-0 flex-col border-r border-[var(--color-border-subtle)]">
+            <div
+              className={`flex w-full min-h-0 shrink-0 flex-col border-r border-[var(--color-border-subtle)] md:w-72 ${
+                mobilePane === "providers" ? "" : "hidden md:flex"
+              }`}
+            >
               <div className="flex h-12 shrink-0 items-center justify-between px-3">
                 <span className="section-label">你的服务商</span>
                 <button
@@ -161,8 +233,12 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* Detail */}
-            <div className="flex min-w-0 flex-1 flex-col">
-              <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-4">
+            <div
+              className={`flex min-h-0 min-w-0 flex-1 flex-col ${
+                mobilePane === "detail" ? "" : "hidden md:flex"
+              }`}
+            >
+              <div className="hidden h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-4 md:flex">
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-md font-medium">
                     {editingId === "new"
@@ -196,14 +272,17 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                 <ProviderForm
                   key={editingId}
                   initial={editing}
-                  onDone={() => setEditingId(editing?.id ?? "new")}
+                  onDone={() => {
+                    setEditingId(editing?.id ?? "new");
+                    setMobilePane("providers");
+                  }}
                 />
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex min-w-0 flex-1 flex-col">
-            <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-4">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="hidden h-12 shrink-0 items-center justify-between border-b border-[var(--color-border-subtle)] px-4 md:flex">
               <span className="text-md font-medium">智能体行为</span>
               <button
                 className="btn-icon"
@@ -219,6 +298,7 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
