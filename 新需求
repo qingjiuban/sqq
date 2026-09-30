@@ -1,0 +1,1658 @@
+AI Code Studio — 产品级 UI/UX 全面重构提示词
+
+一、你的角色
+
+你现在不是普通的前端代码生成器，而是一名：
+
+- 高级产品设计师
+- 高级 UI/UX Designer
+- Desktop App 设计师
+- AI Coding IDE 设计师
+- React/Tailwind 前端工程师
+- Design System 架构师
+
+你需要对当前项目进行一次产品级 UI/UX 重构。
+
+目标不是简单换颜色、换圆角、换字体，而是：
+
+«在不破坏现有功能、状态管理、Agent、模型调用、文件系统、代码编辑器、Preview、Terminal 等业务逻辑的前提下，把当前 UI 从“开发者原型 / 内部工具感”提升到“真正可以发布的 AI Coding 产品”。»
+
+---
+
+二、首先理解当前产品
+
+当前产品是一个：
+
+«Model-Agnostic AI Coding Studio»
+
+核心能力包括：
+
+1. 自定义接入大模型
+2. AI Agent 对话
+3. AI 读取、修改项目文件
+4. AI 执行工具调用
+5. Agent Progress
+6. 文件树
+7. Code Editor
+8. Terminal
+9. Live Preview
+10. Project 管理
+11. Model / Provider 设置
+12. Mobile / Desktop 两套布局
+
+因此 UI 的设计方向应该参考：
+
+- 现代 AI Coding IDE
+- 现代开发工具
+- AI Agent 工作台
+- Linear / Raycast / Arc / Cursor / VS Code 新版 UI 的优点
+- 现代 SaaS 产品的视觉层级
+
+但：
+
+不要直接复制任何一个产品。
+
+需要形成自己的设计语言。
+
+---
+
+三、当前 UI 的核心问题
+
+请你先理解这些问题，然后再开始修改。
+
+当前 UI 最大的问题不是某一个组件丑，而是：
+
+1. 整体过于“平”
+
+目前大量区域都是：
+
+深色背景
+↓
+深色 Panel
+↓
+细边框
+↓
+深色输入框
+↓
+紫色按钮
+
+导致整个页面像一堆深色矩形拼起来。
+
+缺少：
+
+- 明确空间层级
+- 主次关系
+- 视觉焦点
+- 内容容器
+- 品牌识别
+- 精致的微交互
+- 视觉节奏
+
+---
+
+四、总体设计目标
+
+最终视觉应该达到：
+
+«“这是一个真正的 AI 编程产品，而不是一个套了 Tailwind 的开发者 Demo。”»
+
+关键词：
+
+- Premium
+- Modern
+- Minimal
+- Technical
+- Intelligent
+- Calm
+- Dense but breathable
+- Professional
+- Productized
+- AI-native
+
+整体感觉：
+
+Linear × Raycast × Cursor × Arc
+
+但不是复制。
+
+---
+
+五、整体视觉方向
+
+5.1 不要继续使用“纯黑 + 紫色按钮”的廉价 AI 风格
+
+当前：
+
+#0a0b0f
+#0f1117
+#151822
+紫色 #6d5efc
+
+虽然没有错误，但过于典型。
+
+应该重新建立一套完整 Design Token。
+
+建议采用：
+
+Background
+
+不是单纯一个黑色。
+
+应该形成：
+
+App Background
+    ↓
+Primary Surface
+    ↓
+Secondary Surface
+    ↓
+Elevated Surface
+    ↓
+Floating Surface
+
+例如：
+
+App
+#0B0D10
+
+Surface
+#101318
+
+Surface Elevated
+#151920
+
+Surface Floating
+#1A1F27
+
+具体颜色不要机械照抄。
+
+根据实际 UI 调整。
+
+---
+
+六、建立真正的 Design System
+
+不要每个组件自己决定：
+
+- padding
+- border
+- radius
+- font-size
+- color
+- shadow
+
+必须统一。
+
+建立：
+
+Design Tokens
+    ↓
+Primitive Components
+    ↓
+Composite Components
+    ↓
+Page Layout
+
+至少统一：
+
+Spacing
+
+采用 4px / 8px 基础间距体系：
+
+4
+6
+8
+12
+16
+20
+24
+32
+40
+48
+
+禁止出现大量随机：
+
+7px
+9px
+11px
+13px
+15px
+
+除非确实有视觉必要。
+
+---
+
+七、圆角重新设计
+
+当前 UI 有明显的：
+
+«“所有东西都 rounded-md”»
+
+的问题。
+
+不要所有组件一个圆角。
+
+建立层级：
+
+Button       7px
+Input        8px
+Small Card   10px
+Panel        12px
+Modal        16px
+Floating     18px
+
+但是：
+
+不要到处出现巨大圆角。
+
+AI Coding IDE 应该保持专业、克制。
+
+---
+
+八、边框重新设计
+
+当前大量：
+
+border
+border-line
+border-line-soft
+
+导致整个页面像“网格”。
+
+新的原则：
+
+«Border 是辅助信息，不是主要视觉结构。»
+
+减少明显边框。
+
+优先使用：
+
+背景层级
+轻微阴影
+透明度
+空间间距
+hover 状态
+
+只有真正需要分隔的地方才使用 border。
+
+---
+
+九、阴影重新设计
+
+不要使用：
+
+大范围发光
+强紫色 glow
+夸张 box-shadow
+
+AI 产品最容易犯这个问题。
+
+阴影应该非常克制：
+
+0 4px 16px rgba(...)
+0 8px 30px rgba(...)
+
+主要用于：
+
+- Dropdown
+- Modal
+- Floating toolbar
+- Command palette
+- Tooltip
+- Popover
+
+普通 Panel 不应该到处发光。
+
+---
+
+十、颜色系统
+
+建立完整语义颜色：
+
+Background
+Surface
+Surface Elevated
+Surface Hover
+Border
+Border Strong
+
+Text Primary
+Text Secondary
+Text Tertiary
+Text Disabled
+
+Accent
+Accent Hover
+Accent Soft
+
+Success
+Warning
+Error
+Info
+
+Accent 不一定必须是当前紫色。
+
+可以继续使用紫色，但需要：
+
+«降低“廉价 AI 紫”的感觉。»
+
+Accent 应该更多用于：
+
+- 当前状态
+- Focus
+- Primary CTA
+- Agent activity
+- Selection
+- Progress
+
+而不是满屏紫色。
+
+---
+
+十一、顶部 Header 必须重做
+
+当前 Header：
+
+Logo
+AI Code Studio
+Editor / Preview
+...
+Terminal
+Settings
+Open Project
+
+整体太像普通网页 Navbar。
+
+应该变成：
+
+«Desktop Application Command Bar»
+
+设计成真正的 App Chrome。
+
+建议结构：
+
+┌──────────────────────────────────────────────────────────┐
+│ Brand / Project       Workspace          Actions        │
+└──────────────────────────────────────────────────────────┘
+
+左：
+
+Logo
+Project Name
+
+中：
+
+Editor
+Preview
+
+右：
+
+Terminal
+Command
+Settings
+Model
+Project
+
+按钮不要全部是完整文字按钮。
+
+适当使用：
+
+- Icon
+- Tooltip
+- Compact control
+- Icon + text
+
+减少视觉噪音。
+
+---
+
+十二、Sidebar 必须重新设计
+
+当前 Sidebar 太像传统文件管理器。
+
+应该让它成为：
+
+«Workspace Explorer»
+
+结构：
+
+PROJECT
+
+project-name
+
+FILES
+    src
+    components
+    assets
+    ...
+
+OPEN FILES
+    ...
+
+WORKSPACE
+    ...
+
+但是不要机械增加很多区域。
+
+如果没有内容，就不要强行创建。
+
+---
+
+File Tree
+
+必须优化：
+
+文件图标
+
+不同文件类型应该有轻微视觉区别：
+
+TS
+TSX
+JS
+JSX
+CSS
+HTML
+JSON
+MD
+Folder
+
+但不要使用五颜六色的大图标。
+
+采用：
+
+«subtle colored icon»
+
+---
+
+Tree Item
+
+当前 Tree Item 如果过于普通，需要增加：
+
+hover
+selected
+active
+modified
+focused
+
+状态。
+
+Selected 状态不要只是：
+
+紫色背景
+
+而应该是：
+
+subtle surface
++ accent indicator
++ primary text
+
+例如左侧 2px indicator。
+
+---
+
+十三、Editor 区域
+
+Editor 是整个产品的核心。
+
+不能让它看起来只是：
+
+«一个 Monaco Editor 塞进页面。»
+
+需要形成：
+
+Editor Chrome
+    ↓
+Tabs
+    ↓
+Breadcrumb
+    ↓
+Code
+    ↓
+Status Bar
+
+---
+
+Tabs
+
+重新设计：
+
+┌─────────────────────────────────────────┐
+│ App.tsx  ×   index.css ×   App.test.tsx │
+└─────────────────────────────────────────┘
+
+Active tab：
+
+- 有明显但克制的层级
+- 不要巨大紫色块
+- 不要粗边框
+
+Inactive：
+
+- 降低对比度
+
+Modified：
+
+●
+
+而不是非常明显的文字。
+
+---
+
+十四、Code Editor
+
+不要修改 Monaco / CodeMirror 的核心能力。
+
+但是需要统一：
+
+- editor background
+- line number
+- selection
+- cursor
+- active line
+- minimap
+- scrollbar
+
+整体应该和 App UI 完整融合。
+
+不要出现：
+
+«App UI 一种深色 + Editor 又是另一种深色主题。»
+
+---
+
+十五、Agent Chat 是最重要的区域
+
+当前 Agent Chat 太像：
+
+«一个普通 ChatGPT 聊天框塞到右边。»
+
+需要把它设计成：
+
+AI Agent Workspace
+
+而不是普通聊天。
+
+---
+
+Agent Header
+
+应该显示：
+
+AI Agent
+
+Model
+● Claude / GPT / Gemini / Custom
+
+Status
+Ready
+
+而不是堆多个 select。
+
+Model Selector 应该设计成 Popover / Dropdown：
+
+Model
+────────────────
+GPT-5
+Claude
+Gemini
+Custom Model
+
+如果用户已经配置模型，可以展示：
+
+● GPT-5
+
+---
+
+十六、聊天消息重新设计
+
+不要简单：
+
+User
+text
+
+Assistant
+text
+
+应该形成明确的信息层级。
+
+User
+
+可以更加紧凑：
+
+You
+┌────────────────────┐
+│ Build a landing... │
+└────────────────────┘
+
+Assistant
+
+不要巨大卡片。
+
+AI 内容应该更接近：
+
+AI
+────────────────────
+I'll update the layout...
+
+[tool activity]
+
+The layout has been updated...
+
+---
+
+十七、Agent Tool Call 必须重点优化
+
+这是这个产品区别于普通 AI Chat 的核心。
+
+当前：
+
+«ToolCall / AgentProgress»
+
+应该重新设计成：
+
+Agent Activity Timeline
+
+例如：
+
+● Thinking
+
+✓ Read package.json
+✓ Inspect src/App.tsx
+✓ Edit App.tsx
+✓ Run npm build
+
+● Verifying...
+
+而不是：
+
+ToolCall
+tool-start
+tool-end
+
+这种开发者内部状态。
+
+用户需要看到的是：
+
+«AI 正在做什么。»
+
+而不是：
+
+«内部程序调用了什么函数。»
+
+---
+
+十八、Tool Call 设计
+
+默认折叠。
+
+例如：
+
+✓ Edited 3 files                    2.4s
+
+点击展开：
+
+Edit App.tsx
+
++ ...
+- ...
+
+不要默认显示大量 JSON。
+
+---
+
+十九、Agent 状态
+
+需要建立：
+
+Idle
+Thinking
+Working
+Waiting
+Needs approval
+Success
+Error
+
+视觉状态系统。
+
+例如：
+
+● Ready
+◌ Thinking
+◉ Working
+! Needs approval
+✓ Completed
+× Error
+
+状态颜色只用于状态表达。
+
+---
+
+二十、输入框必须重做
+
+当前：
+
+«普通 textarea + Send Button»
+
+太像普通 ChatGPT。
+
+应该设计成：
+
+AI Command Composer
+
+类似现代 AI Coding Agent。
+
+结构：
+
+┌──────────────────────────────────────────┐
+│ Describe what you want to build...       │
+│                                          │
+│ + Add context        Model       ↑       │
+└──────────────────────────────────────────┘
+
+底部可以预留：
+
+Attach
+Context
+Model
+Mode
+Send
+
+但不要一次性全部展示。
+
+默认保持干净。
+
+---
+
+Input 状态
+
+必须支持：
+
+Idle
+Focus
+Typing
+Disabled
+Generating
+
+Generating 时：
+
+Stop generating
+
+而不是 Send 消失得毫无解释。
+
+---
+
+二十一、Welcome Screen 必须彻底重新设计
+
+当前 Welcome：
+
+Logo
+AI Code Studio
+Description
+Open workspace
+几个 chip
+
+太像模板。
+
+应该设计成：
+
+AI Coding Workspace Landing
+
+核心视觉：
+
+                    Logo
+
+              AI Code Studio
+
+        Build software with AI.
+
+      Bring your own model.
+      Edit. Run. Preview.
+
+          [ Open Workspace ]
+
+       Recent projects
+       ────────────────
+       project-a
+       project-b
+       project-c
+
+如果没有 Recent Projects：
+
+不要强行制造假的内容。
+
+可以使用：
+
+Open Workspace
+
++ 快捷操作。
+
+---
+
+二十二、Welcome 页面不要过度装饰
+
+当前：
+
+大紫色光晕
+渐变 Logo
+巨大阴影
+
+这种设计容易显得廉价。
+
+改为：
+
+«subtle atmospheric background»
+
+可以有非常轻微的：
+
+- radial gradient
+- grid
+- noise
+- glow
+
+但是必须几乎感觉不到。
+
+---
+
+二十三、Preview 必须像真正的浏览器工作区
+
+当前 Preview：
+
+Preview
+status
+Reload
+Open
+Start
+
+太像开发工具面板。
+
+应该变成：
+
+Preview
+
+[ Device ] [ Responsive ] [ Reload ] [ Open ]
+
+────────────────────────
+
+             Web App
+
+如果未来支持：
+
+Desktop
+Tablet
+Mobile
+
+可以加入 Device Switcher。
+
+但当前功能不存在时：
+
+不要伪造功能。
+
+---
+
+二十四、Preview Empty State
+
+不要：
+
+Ready to start xxx on port xxx
+
+这种纯技术信息。
+
+应该：
+
+Preview isn't running
+
+Start the local preview server
+to see your application here.
+
+[ Start Preview ]
+
+技术信息可以放在 secondary text。
+
+---
+
+二十五、Terminal 必须产品化
+
+Terminal 不应该只是黑底 + monospace。
+
+结构：
+
+Terminal
+
+$ npm install
+...
+$ npm run dev
+...
+
+顶部：
+
+Terminal
+Running
+Clear
+Copy
+
+状态：
+
+Running
+Success
+Failed
+
+要有明确视觉反馈。
+
+---
+
+二十六、Settings 必须重做
+
+当前 Settings 如果只是：
+
+大量 input
+大量 label
+大量 border
+
+会非常像后台管理系统。
+
+应该设计成：
+
+Settings Workspace
+
+左：
+
+General
+Models
+Providers
+Agent
+Editor
+Preview
+Advanced
+
+右：
+
+Settings content
+
+类似现代 Desktop App。
+
+---
+
+二十七、Provider / Model 配置
+
+这是产品的重要功能。
+
+应该让用户感觉：
+
+«“我可以自由接入任何模型。”»
+
+而不是：
+
+«“我正在填写一个 API 表单。”»
+
+例如：
+
+Models
+
+Your providers
+────────────────────
+
+OpenAI
+GPT-5
+● Connected
+
+Anthropic
+Claude
+● Connected
+
+Custom
+OpenAI Compatible
+● Add provider
+
+Provider Card 应该具有：
+
+- Logo / icon
+- Provider name
+- Model
+- Connection status
+- Edit
+- Delete
+
+---
+
+二十八、移动端 UI
+
+移动端不是简单：
+
+Desktop width → mobile width
+
+必须重新考虑交互。
+
+移动端应该采用：
+
+Header
+Content
+Bottom navigation / segmented navigation
+
+例如：
+
+┌──────────────────────┐
+│ AI Code Studio   ⚙   │
+├──────────────────────┤
+│                      │
+│      Content         │
+│                      │
+├──────────────────────┤
+│ Chat │ Files │ Code  │
+│ Preview │ Terminal   │
+└──────────────────────┘
+
+不要把 Desktop Sidebar 硬塞进 Mobile。
+
+---
+
+二十九、响应式设计
+
+必须保证：
+
+Desktop
+
+≥ 1280px
+
+完整工作区。
+
+Laptop
+
+1024px - 1279px
+
+压缩：
+
+- Sidebar
+- Chat
+- Header
+
+Tablet
+
+768px - 1023px
+
+减少同时显示区域。
+
+Mobile
+
+< 768px
+
+采用独立移动端布局。
+
+---
+
+三十、不要制造“空旷感”
+
+UI 优化不是：
+
+«加大 padding。»
+
+当前产品如果直接大幅增加：
+
+padding
+margin
+gap
+
+会变得非常空。
+
+AI Coding IDE 本质上属于：
+
+«High information density application»
+
+所以必须：
+
+«Dense but organized»
+
+而不是：
+
+«Spacious but empty»
+
+---
+
+三十一、字体系统
+
+重新统一字体层级。
+
+建议：
+
+Display
+24–28px
+
+Page Title
+18–20px
+
+Section
+13–14px
+
+Body
+13px
+
+Secondary
+12px
+
+Metadata
+11px
+
+Code
+12–13px
+
+避免：
+
+10px
+11px
+12px
+13px
+
+到处随机出现。
+
+尤其不要大量使用：
+
+uppercase
+letter-spacing
+
+当前 ".panel-title" 的：
+
+font-size: 10px
+text-transform: uppercase
+letter-spacing: 0.1em
+
+使用过多会让产品产生明显的“开发者工具模板感”。
+
+只在真正需要的地方使用。
+
+---
+
+三十二、图标系统
+
+必须统一 Icon Style。
+
+原则：
+
+16px
+1.5px stroke
+rounded
+simple
+
+不要：
+
+- emoji
+- 巨大图标
+- 混合不同 Icon 风格
+- 随便用 Unicode 字符
+
+例如当前 Welcome：
+
+◆
+
+不要继续使用这种占位式图标。
+
+应该建立真正的 Brand Mark。
+
+---
+
+三十三、按钮设计
+
+按钮应该有等级。
+
+Primary
+
+真正重要的动作：
+
+Open Workspace
+Start Preview
+Save
+Send
+
+Secondary
+
+Switch Project
+Configure
+Reload
+
+Ghost
+
+Settings
+Terminal
+More
+
+Destructive
+
+Delete
+Remove
+Stop
+
+不要所有按钮都长得一样。
+
+---
+
+三十四、Hover / Active / Focus
+
+所有交互组件必须考虑：
+
+Default
+Hover
+Pressed
+Focus
+Disabled
+Loading
+Success
+Error
+
+不能只写：
+
+hover:bg...
+
+然后结束。
+
+---
+
+三十五、动画
+
+加入少量微交互。
+
+例如：
+
+Panel
+
+150–200ms
+
+Dropdown
+
+120–160ms
+
+Modal
+
+180–220ms
+
+Agent status
+
+轻微 opacity / transform
+
+Tool progress
+
+轻微 pulse
+
+原则：
+
+«Fast, subtle, purposeful.»
+
+禁止：
+
+- 大幅缩放
+- 过度弹跳
+- 滥用动画
+- 页面切换动画过重
+
+---
+
+三十六、必须保留的功能
+
+UI 重构期间：
+
+严禁删除或者破坏任何现有功能。
+
+包括：
+
+- Project Open
+- Project Switch
+- File Tree
+- Create File
+- Create Folder
+- Refresh
+- Editor
+- Tabs
+- Save
+- Ctrl/Cmd + S
+- Agent
+- Tool Calls
+- Agent Approval
+- Model Provider
+- Model Switching
+- Terminal
+- Preview
+- Preview Detection
+- Start
+- Stop
+- Reload
+- Open Preview
+- Settings
+- Mobile
+- Desktop
+- Existing Zustand stores
+- Existing Agent Loop
+- Existing API abstraction
+
+---
+
+三十七、不要重构业务逻辑
+
+这是非常重要的。
+
+本任务：
+
+«UI/UX Refactor»
+
+不是：
+
+«Architecture Refactor»
+
+因此：
+
+不要随意修改：
+
+store
+agent
+API
+types
+filesystem
+preview logic
+provider logic
+
+如果一个 UI 改造必须修改组件逻辑：
+
+只进行最小修改。
+
+---
+
+三十八、禁止为了 UI 重构而新增后端
+
+不要新增：
+
+- Node Server
+- Express
+- Database
+- API Server
+- Auth
+- Cloud service
+
+当前架构是什么，就保持什么。
+
+---
+
+三十九、禁止虚构功能
+
+不要为了让 UI 看起来高级而增加：
+
+- Fake recent projects
+- Fake AI status
+- Fake Git
+- Fake deployment
+- Fake collaboration
+- Fake analytics
+- Fake command palette functionality
+
+如果 UI 上设计了一个控件：
+
+«必须绑定真实功能。»
+
+如果没有对应功能：
+
+«不显示。»
+
+---
+
+四十、优先级
+
+按照以下优先级进行：
+
+P0
+
+整体视觉体系
+
+P0
+
+Layout / Spacing
+
+P0
+
+Header
+
+P0
+
+Sidebar
+
+P0
+
+Agent Chat
+
+P0
+
+Input Composer
+
+P0
+
+Editor Chrome
+
+P1
+
+Preview
+
+P1
+
+Terminal
+
+P1
+
+Settings
+
+P1
+
+Mobile
+
+P2
+
+Micro interactions
+
+P2
+
+Animation
+
+---
+
+四十一、重构方法
+
+不要直接从第一个组件开始乱改。
+
+必须按照以下步骤：
+
+Step 1
+
+分析现有 UI。
+
+输出：
+
+Current UI Problems
+
+Step 2
+
+建立：
+
+Design System
+
+包括：
+
+- colors
+- spacing
+- typography
+- radius
+- shadows
+- icons
+- interaction states
+
+Step 3
+
+建立：
+
+App Layout
+
+Step 4
+
+重新设计：
+
+Header
+Sidebar
+Editor
+Agent
+Preview
+Terminal
+
+Step 5
+
+重新设计：
+
+Welcome
+Settings
+Mobile
+
+Step 6
+
+统一所有组件。
+
+---
+
+四十二、代码要求
+
+优先复用现有组件。
+
+如果发现重复 UI：
+
+抽象成：
+
+Button
+IconButton
+Input
+Select
+Panel
+Section
+Badge
+Status
+Popover
+Modal
+
+但不要为了抽象而抽象。
+
+组件必须：
+
+- 易读
+- 可维护
+- 类型安全
+- 与现有 React 架构兼容
+
+---
+
+四十三、最终视觉检查
+
+完成后必须自己进行一次：
+
+UI Design Review
+
+逐项检查：
+
+Visual
+
+- 是否仍然像 Tailwind Demo？
+- 是否仍然有大量矩形？
+- 是否仍然过度依赖 border？
+- 是否仍然到处紫色？
+- 是否有足够层级？
+- 是否有明显视觉焦点？
+
+UX
+
+- 用户第一眼是否知道在哪里开始？
+- 用户是否知道当前项目？
+- 用户是否知道 AI 正在做什么？
+- 用户是否知道 Preview 是否运行？
+- 用户是否知道当前模型？
+- 用户是否知道操作是否成功？
+
+Density
+
+- 是否过空？
+- 是否过挤？
+- 是否出现巨大无意义留白？
+- 是否有信息层级？
+
+Consistency
+
+- Button 是否统一？
+- Input 是否统一？
+- Radius 是否统一？
+- Typography 是否统一？
+- Icon 是否统一？
+- State 是否统一？
+
+Responsive
+
+检查：
+
+Desktop
+Laptop
+Tablet
+Mobile
+
+---
+
+四十四、最终设计原则
+
+整个产品最终必须遵守：
+
+«Less chrome, more workspace.»
+
+«Less border, more hierarchy.»
+
+«Less decoration, more information.»
+
+«Less “AI purple”, more product identity.»
+
+«Less dashboard, more native application.»
+
+«Dense, but never cluttered.»
+
+«Minimal, but never empty.»
+
+«Technical, but never ugly.»
+
+«Premium, but never flashy.»
+
+---
+
+四十五、最终目标
+
+最终用户打开这个 APP 时，第一感觉应该从：
+
+«“这是一个程序员自己做的 AI 编程工具。”»
+
+变成：
+
+«“这是一个真正可以长期使用的 AI Coding IDE。”»
+
+---
+
+四十六、执行要求
+
+现在开始。
+
+不要先给我一堆理论。
+
+直接：
+
+1. 阅读现有代码
+2. 分析现有 UI
+3. 建立新的 Design Tokens
+4. 重构 UI
+5. 保留所有现有业务能力
+6. 保持现有技术架构
+7. 确保 TypeScript 无错误
+8. 确保项目可以正常运行
+9. 检查 Desktop
+10. 检查 Mobile
+11. 最后进行一次 UI/UX Review
+
+如果现有设计和本提示词冲突：
+
+«以本提示词的产品级 UI/UX 原则为准。»
+
+但是：
+
+«业务逻辑永远优先于视觉改造。»
+
+不要为了视觉效果破坏任何已有功能。
