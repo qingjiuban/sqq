@@ -44,7 +44,7 @@ export default function CodeEditor() {
         options={{
           fontSize: 13,
           fontFamily:
-            "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+            "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Sarasa Mono SC\", \"Noto Sans Mono CJK SC\", \"PingFang SC\", \"Microsoft YaHei\", monospace",
           minimap: { enabled: true, scale: 1 },
           scrollBeyondLastLine: false,
           automaticLayout: true,
