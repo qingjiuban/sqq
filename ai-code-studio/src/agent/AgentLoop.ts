@@ -135,7 +135,7 @@ export async function* runAgent(
         repairRounds += 1;
         yield {
           type: "notice",
-          content: `Running project verification (round ${repairRounds})…`,
+          content: `正在运行项目校验（第 ${repairRounds} 轮）…`,
         };
         const outcomes = await runVerification();
         if (outcomes.length === 0) {
@@ -145,9 +145,9 @@ export async function* runAgent(
           if (!failed) {
             yield {
               type: "notice",
-              content: `Verification passed: ${outcomes
+              content: `校验通过：${outcomes
                 .map((outcome) => outcome.step.label)
-                .join(", ")}.`,
+                .join("、")}。`,
             };
           } else {
             const transcript = outcomes
@@ -170,7 +170,7 @@ export async function* runAgent(
             };
             yield {
               type: "notice",
-              content: `Verification failed at "${failed.step.label}". Asking the model to fix it…`,
+              content: `校验在 "${failed.step.label}" 处失败。正在请求模型修复…`,
             };
             messages.push({
               role: "user",
@@ -282,7 +282,7 @@ export async function* runAgent(
 
   yield {
     type: "notice",
-    content: `Reached the maximum of ${maxIterations} iterations and stopped.`,
+    content: `已达到 ${maxIterations} 次迭代上限，已停止。`,
   };
   yield { type: "status", status: "done" };
   yield { type: "done" };

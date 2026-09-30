@@ -43,12 +43,12 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
         {/* Rail */}
         <div className="flex w-52 shrink-0 flex-col border-r border-[var(--color-line-soft)] bg-[var(--color-ink)] py-3">
           <div className="px-4 pb-3">
-            <span className="text-md font-semibold tracking-tight">Settings</span>
+            <span className="text-md font-semibold tracking-tight">设置</span>
           </div>
           {(
             [
-              { value: "models", label: "Models", icon: <IconPlug size={15} /> },
-              { value: "agent", label: "Agent", icon: <IconAgent size={15} /> },
+              { value: "models", label: "模型", icon: <IconPlug size={15} /> },
+              { value: "agent", label: "智能体", icon: <IconAgent size={15} /> },
             ] as const
           ).map((item) => {
             const active = section === item.value;
@@ -75,12 +75,12 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
             {/* Provider list */}
             <div className="flex w-64 shrink-0 flex-col border-r border-[var(--color-line-soft)]">
               <div className="flex h-12 shrink-0 items-center justify-between px-3">
-                <span className="section-label">Your providers</span>
+                <span className="section-label">你的服务商</span>
                 <button
                   className="btn-icon"
                   onClick={() => setEditingId("new")}
-                  title="Add provider"
-                  aria-label="Add provider"
+                  title="添加服务商"
+                  aria-label="添加服务商"
                 >
                   <IconPlus size={15} />
                 </button>
@@ -88,7 +88,7 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
               <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
                 {providers.length === 0 && (
                   <div className="px-2 py-3 text-xs text-[var(--color-mute)]">
-                    No providers yet. Add one to get started.
+                    还没有服务商。添加一个即可开始。
                   </div>
                 )}
                 {providers.map((provider) => {
@@ -125,8 +125,8 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                             removeProvider(provider.id);
                             if (editingId === provider.id) setEditingId("new");
                           }}
-                          title="Delete provider"
-                          aria-label="Delete provider"
+                          title="删除服务商"
+                          aria-label="删除服务商"
                         >
                           <IconTrash size={14} />
                         </button>
@@ -142,7 +142,7 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                     onClick={() => setActive(editing.id)}
                     disabled={editing.id === activeId}
                   >
-                    {editing.id === activeId ? "Active" : "Set as active"}
+                    {editing.id === activeId ? "当前使用" : "设为当前"}
                   </button>
                 </div>
               )}
@@ -154,8 +154,8 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-md font-medium">
                     {editingId === "new"
-                      ? "New provider"
-                      : editing?.name ?? "Provider"}
+                      ? "新建服务商"
+                      : editing?.name ?? "服务商"}
                   </span>
                   {editing && (
                     <span className="truncate text-xs text-[var(--color-mute)]">
@@ -166,8 +166,8 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
                 <button
                   className="btn-icon"
                   onClick={onClose}
-                  title="Close"
-                  aria-label="Close settings"
+                  title="关闭"
+                  aria-label="关闭设置"
                 >
                   <IconClose size={15} />
                 </button>
@@ -184,12 +184,12 @@ export default function ModelSettings({ onClose }: { onClose: () => void }) {
         ) : (
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--color-line-soft)] px-4">
-              <span className="text-md font-medium">Agent behaviour</span>
+              <span className="text-md font-medium">智能体行为</span>
               <button
                 className="btn-icon"
                 onClick={onClose}
-                title="Close"
-                aria-label="Close settings"
+                title="关闭"
+                aria-label="关闭设置"
               >
                 <IconClose size={15} />
               </button>

@@ -7,13 +7,13 @@ const STATUS: Record<
   AgentStatus,
   { text: string; tone: "idle" | "accent" | "ok" | "err" }
 > = {
-  idle: { text: "Ready", tone: "idle" },
-  thinking: { text: "Thinking", tone: "accent" },
-  streaming: { text: "Writing", tone: "accent" },
-  "calling-tool": { text: "Working", tone: "accent" },
-  "waiting-approval": { text: "Needs approval", tone: "accent" },
-  done: { text: "Done", tone: "ok" },
-  error: { text: "Error", tone: "err" },
+  idle: { text: "就绪", tone: "idle" },
+  thinking: { text: "思考中", tone: "accent" },
+  streaming: { text: "撰写中", tone: "accent" },
+  "calling-tool": { text: "执行中", tone: "accent" },
+  "waiting-approval": { text: "等待授权", tone: "accent" },
+  done: { text: "已完成", tone: "ok" },
+  error: { text: "出错", tone: "err" },
 };
 
 /**

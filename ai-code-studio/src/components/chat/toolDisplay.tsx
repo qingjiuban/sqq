@@ -31,36 +31,36 @@ export function describeTool(call: ToolCall): {
   const a = call.arguments ?? {};
   switch (call.name) {
     case "read_file":
-      return { label: "Read", detail: basename(str(a.path)), icon: <IconFiles size={14} /> };
+      return { label: "读取", detail: basename(str(a.path)), icon: <IconFiles size={14} /> };
     case "write_file":
-      return { label: "Wrote", detail: basename(str(a.path)), icon: <IconEdit size={14} /> };
+      return { label: "写入", detail: basename(str(a.path)), icon: <IconEdit size={14} /> };
     case "edit_file":
-      return { label: "Edited", detail: basename(str(a.path)), icon: <IconEdit size={14} /> };
+      return { label: "编辑", detail: basename(str(a.path)), icon: <IconEdit size={14} /> };
     case "list_files":
       return {
-        label: "Listed files",
+        label: "列出文件",
         detail: str(a.path) && str(a.path) !== "." ? basename(str(a.path)) : undefined,
         icon: <IconFiles size={14} />,
       };
     case "search_files":
       return {
-        label: "Searched",
+        label: "搜索",
         detail: str(a.query) || str(a.pattern) || undefined,
         icon: <IconSearch size={14} />,
       };
     case "get_project_info":
-      return { label: "Inspected project", icon: <IconCube size={14} /> };
+      return { label: "检查项目", icon: <IconCube size={14} /> };
     case "run_command":
-      return { label: "Ran", detail: str(a.command), icon: <IconTerminal size={14} /> };
+      return { label: "运行", detail: str(a.command), icon: <IconTerminal size={14} /> };
     case "get_process_output":
       return {
-        label: "Read output",
+        label: "读取输出",
         detail: str(a.processId) || undefined,
         icon: <IconTerminal size={14} />,
       };
     case "kill_process":
       return {
-        label: "Stopped process",
+        label: "停止进程",
         detail: str(a.processId) || undefined,
         icon: <IconStop size={14} />,
       };
@@ -73,12 +73,12 @@ export function describeApproval(call: ToolCall): string {
   switch (call.name) {
     case "write_file":
     case "edit_file":
-      return "This will modify files in your project.";
+      return "此操作将修改你项目中的文件。";
     case "run_command":
-      return "This will run a command inside your project.";
+      return "此操作将在你的项目中运行一条命令。";
     case "kill_process":
-      return "This will stop a running process.";
+      return "此操作将停止一个正在运行的进程。";
     default:
-      return "Allow this operation?";
+      return "允许此操作吗？";
   }
 }

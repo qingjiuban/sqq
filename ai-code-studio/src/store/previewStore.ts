@@ -66,8 +66,8 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
       if (!plan) {
         set({
           error: isMobileOS()
-            ? "No HTML/SVG file to preview yet. Ask the agent to create index.html."
-            : "Could not detect how to run this project.",
+            ? "暂无可预览的 HTML/SVG 文件。可以让智能体创建 index.html。"
+            : "无法检测该项目的运行方式。",
         });
         return null;
       }
@@ -94,7 +94,7 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
     if (plan.localEntry) {
       const url = localFileUrl(plan.localEntry);
       if (!url) {
-        set({ status: "error", error: "No project root available." });
+        set({ status: "error", error: "没有可用的项目根目录。" });
         return;
       }
       set({ status: "running", url, port: null, error: null, processId: null });
@@ -102,7 +102,7 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
     }
 
     if (!plan.port) {
-      set({ status: "error", error: "This project cannot be previewed here." });
+      set({ status: "error", error: "该项目无法在此处预览。" });
       return;
     }
 
@@ -140,7 +140,7 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
           if (!polled.running) {
             set({
               status: "error",
-              error: `Process exited with code ${polled.exitCode ?? "?"} before the server was ready.`,
+              error: `进程在服务器就绪前退出，退出码 ${polled.exitCode ?? "?"}。`,
             });
             return;
           }
@@ -150,7 +150,7 @@ export const usePreviewStore = create<PreviewStore>((set, get) => ({
 
       set({
         status: "error",
-        error: `Server did not become ready on port ${plan.port} in time.`,
+        error: `服务器未能在限定时间内于端口 ${plan.port} 就绪。`,
       });
     } catch (error) {
       set({

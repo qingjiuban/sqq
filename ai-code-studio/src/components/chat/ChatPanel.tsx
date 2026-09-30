@@ -48,19 +48,19 @@ function AgentControls({
         onClick={() => setOpen((v) => !v)}
       >
         <StatusDot tone={active ? "ok" : "idle"} />
-        <span className="truncate">{active ? active.name : "No model"}</span>
+        <span className="truncate">{active ? active.name : "未选择模型"}</span>
         <IconChevronDown size={12} className="shrink-0 text-[var(--color-mute)]" />
       </button>
 
       {open && (
         <div className="animate-pop-in absolute right-0 top-[calc(100%+6px)] z-40 w-64 overflow-hidden rounded-[var(--radius-panel)] border border-[var(--color-line)] bg-[var(--color-float)] shadow-[var(--shadow-pop)]">
           <div className="px-3 pb-1 pt-2.5">
-            <span className="eyebrow">Model</span>
+            <span className="eyebrow">模型</span>
           </div>
           <div className="max-h-56 overflow-y-auto pb-1">
             {providers.length === 0 && (
               <div className="px-3 py-2 text-xs text-[var(--color-mute)]">
-                No providers configured
+                尚未配置服务商
               </div>
             )}
             {providers.map((provider) => {
@@ -87,14 +87,14 @@ function AgentControls({
           </div>
           <div className="border-t border-[var(--color-line-soft)]">
             <div className="px-3 pb-1 pt-2.5">
-              <span className="eyebrow">Approval</span>
+              <span className="eyebrow">审批</span>
             </div>
             <div className="flex gap-1 px-2 pb-2">
               {(
                 [
-                  { value: "ask-all", label: "Ask all" },
-                  { value: "auto-safe", label: "Auto safe" },
-                  { value: "full-auto", label: "Full auto" },
+                  { value: "ask-all", label: "全部询问" },
+                  { value: "auto-safe", label: "安全自动" },
+                  { value: "full-auto", label: "完全自动" },
                 ] as const
               ).map((mode) => (
                 <button
@@ -119,7 +119,7 @@ function AgentControls({
             }}
           >
             <IconSettings size={14} />
-            Manage providers
+            管理服务商
           </button>
         </div>
       )}
@@ -210,7 +210,7 @@ export default function ChatPanel({
             appendAssistant(event.content);
             break;
           case "notice":
-            appendAssistant(`\n[Agent] ${event.content}`);
+            appendAssistant(`\n[智能体] ${event.content}`);
             break;
           case "tool-start":
             agent.startTool(event.call);
@@ -224,7 +224,7 @@ export default function ChatPanel({
             terminal.setVisible(true);
             break;
           case "error":
-            appendAssistant(`\n[Error] ${event.message}`);
+            appendAssistant(`\n[错误] ${event.message}`);
             break;
           default:
             break;
@@ -232,7 +232,7 @@ export default function ChatPanel({
       }
     } catch (error) {
       appendAssistant(
-        `\n[Error] ${error instanceof Error ? error.message : String(error)}`,
+        `\n[错误] ${error instanceof Error ? error.message : String(error)}`,
       );
     } finally {
       setBusy(false);
@@ -256,7 +256,7 @@ export default function ChatPanel({
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[7px] bg-[var(--color-iris-deep)] text-[var(--color-iris-hi)]">
             <IconSpark size={14} />
           </span>
-          <span className="truncate text-sm font-medium">AI Agent</span>
+          <span className="truncate text-sm font-medium">AI 智能体</span>
         </div>
         <AgentControls onOpenSettings={onOpenSettings} />
       </div>
@@ -269,19 +269,19 @@ export default function ChatPanel({
               <IconSpark size={18} />
             </span>
             <span className="text-sm font-medium text-[var(--color-dim)]">
-              {active ? "What should we build?" : "No model configured"}
+              {active ? "想做点什么？" : "尚未配置模型"}
             </span>
             <span className="text-xs text-[var(--color-mute)]">
               {active
-                ? "Describe a feature or a change and the agent will edit your project."
-                : "Add a provider to start using the agent."}
+                ? "描述一个功能或改动，智能体将直接编辑你的项目。"
+                : "添加一个服务商即可开始使用智能体。"}
             </span>
             {!active && (
               <button
                 className="btn btn-primary mt-1"
                 onClick={onOpenSettings}
               >
-                Configure model
+                配置模型
               </button>
             )}
           </div>
@@ -300,7 +300,7 @@ export default function ChatPanel({
             className="max-h-40 min-h-[62px] w-full resize-none bg-transparent px-3 py-2.5 text-sm text-[var(--color-fg)] outline-none placeholder:text-[var(--color-faint)]"
             value={input}
             placeholder={
-              active ? "Describe what to build or change…" : "Configure a model first"
+              active ? "描述你想构建或修改的内容…" : "请先配置模型"
             }
             disabled={!active || busy}
             onChange={(e) => setInput(e.target.value)}
@@ -313,14 +313,14 @@ export default function ChatPanel({
           />
           <div className="flex items-center justify-between px-2 pb-2">
             <span className="px-1 text-xs text-[var(--color-faint)]">
-              {busy ? "Agent is working…" : "Enter to send · Shift+Enter for newline"}
+              {busy ? "智能体正在工作…" : "Enter 发送 · Shift+Enter 换行"}
             </span>
             <button
               className="btn btn-primary !h-8 !w-8 !p-0"
               onClick={send}
               disabled={!canSend}
-              title="Send"
-              aria-label="Send"
+              title="发送"
+              aria-label="发送"
             >
               {busy ? (
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-[1.5px] border-white/30 border-t-white" />
@@ -338,7 +338,7 @@ export default function ChatPanel({
           <div className="animate-pop-in w-[min(460px,100%)] overflow-hidden rounded-[var(--radius-modal)] border border-[var(--color-line)] bg-[var(--color-float)] shadow-[var(--shadow-modal)]">
             <div className="flex items-center gap-2 px-4 pt-4">
               <StatusDot tone="warn" />
-              <span className="text-md font-medium">Permission requested</span>
+              <span className="text-md font-medium">请求授权</span>
             </div>
             <div className="mx-4 mt-3 rounded-[var(--radius-card)] bg-[var(--color-ink)] p-3">
               <ToolCallView call={pending.call} status="running" />
@@ -351,13 +351,13 @@ export default function ChatPanel({
                 className="btn btn-ghost"
                 onClick={() => resolveApproval(false)}
               >
-                Deny
+                拒绝
               </button>
               <button
                 className="btn btn-primary"
                 onClick={() => resolveApproval(true)}
               >
-                Allow once
+                允许一次
               </button>
             </div>
           </div>

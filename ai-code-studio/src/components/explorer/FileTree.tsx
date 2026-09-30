@@ -38,7 +38,7 @@ function TreeNode({ entry, depth }: { entry: FileEntry; depth: number }) {
         onClick={handleClick}
         onContextMenu={(e) => {
           e.preventDefault();
-          if (window.confirm(`Delete "${entry.name}"?`)) deleteEntry(entry.path);
+          if (window.confirm(`确定删除 "${entry.name}" 吗？`)) deleteEntry(entry.path);
         }}
         title={entry.path}
       >
@@ -81,7 +81,7 @@ export default function FileTree({ dirPath, depth }: FileTreeProps) {
         className="py-1 text-sm text-[var(--color-faint)]"
         style={{ paddingLeft: `${depth * 14 + 27}px` }}
       >
-        Loading…
+        加载中…
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function FileTree({ dirPath, depth }: FileTreeProps) {
         className="py-1 text-sm text-[var(--color-faint)]"
         style={{ paddingLeft: `${depth * 14 + 27}px` }}
       >
-        Empty folder
+        空文件夹
       </div>
     );
   }

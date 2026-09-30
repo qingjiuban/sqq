@@ -13,13 +13,13 @@ function statusOf(entry: {
   chip: string;
 } {
   if (entry.running)
-    return { text: "Running", tone: "accent", chip: "chip chip-accent" };
+    return { text: "运行中", tone: "accent", chip: "chip chip-accent" };
   if (entry.timedOut)
-    return { text: "Timed out", tone: "warn", chip: "chip chip-warn" };
+    return { text: "已超时", tone: "warn", chip: "chip chip-warn" };
   if (entry.exitCode === 0)
-    return { text: "Success", tone: "ok", chip: "chip chip-ok" };
+    return { text: "成功", tone: "ok", chip: "chip chip-ok" };
   return {
-    text: `Exit ${entry.exitCode ?? "?"}`,
+    text: `退出码 ${entry.exitCode ?? "?"}`,
     tone: "err",
     chip: "chip chip-err",
   };
@@ -42,7 +42,7 @@ export default function TerminalPanel() {
       >
         <IconChevronRight size={13} />
         <IconTerminal size={14} />
-        <span className="font-medium">Terminal</span>
+        <span className="font-medium">终端</span>
         {entries.length > 0 && (
           <span className="chip ml-0.5">{entries.length}</span>
         )}
@@ -59,17 +59,17 @@ export default function TerminalPanel() {
         >
           <IconChevronDown size={13} />
           <IconTerminal size={14} />
-          Terminal
+          终端
           {entries.length > 0 && (
             <span className="chip ml-0.5">{entries.length}</span>
           )}
         </button>
         <div className="flex items-center gap-1">
           <button className="btn btn-ghost !h-7" onClick={clear}>
-            Clear
+            清空
           </button>
           <button className="btn btn-ghost !h-7" onClick={toggle}>
-            Hide
+            隐藏
           </button>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function TerminalPanel() {
       >
         {entries.length === 0 && (
           <div className="text-[var(--color-faint)]">
-            Commands the agent runs will appear here.
+            智能体运行的命令将显示在这里。
           </div>
         )}
         {entries.map((entry) => {

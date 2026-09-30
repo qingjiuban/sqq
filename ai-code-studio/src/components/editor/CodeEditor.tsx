@@ -22,10 +22,10 @@ export default function CodeEditor() {
         </span>
         <div className="flex flex-col items-center gap-1 text-center">
           <span className="text-sm font-medium text-[var(--color-dim)]">
-            No file open
+            未打开文件
           </span>
           <span className="text-xs text-[var(--color-mute)]">
-            Pick a file from the explorer to start editing
+            从资源管理器中选择一个文件开始编辑
           </span>
         </div>
       </div>

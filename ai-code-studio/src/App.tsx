@@ -71,15 +71,15 @@ function MobileLayout({
         if (next === "preview") onViewChange("preview");
       }}
       items={[
-        { value: "files", label: "Files", icon: TAB_ICONS.files },
+        { value: "files", label: "文件", icon: TAB_ICONS.files },
         {
           value: "code",
-          label: "Code",
+          label: "代码",
           icon: TAB_ICONS.code,
           badge: tabs.length || undefined,
         },
-        { value: "chat", label: "Agent", icon: TAB_ICONS.chat },
-        { value: "preview", label: "Preview", icon: TAB_ICONS.preview },
+        { value: "chat", label: "智能体", icon: TAB_ICONS.chat },
+        { value: "preview", label: "预览", icon: TAB_ICONS.preview },
       ]}
     >
       {tab === "files" && <Sidebar embedded />}
@@ -148,14 +148,14 @@ export default function App() {
             <button
               className="btn-icon"
               onClick={() => setShowSettings(true)}
-              title="Settings"
-              aria-label="Settings"
+              title="设置"
+              aria-label="设置"
             >
               <IconSettings />
             </button>
             {root && !isMobile && (
               <button className="btn btn-primary" onClick={openProject}>
-                Switch
+                切换
               </button>
             )}
           </div>
@@ -191,7 +191,7 @@ export default function App() {
                 className="max-w-52 truncate text-sm text-[var(--color-dim)]"
                 title={projectName}
               >
-                {projectName || "Untitled"}
+                {projectName || "未命名"}
               </span>
             </>
           )}
@@ -204,8 +204,8 @@ export default function App() {
               value={view}
               onChange={setView}
               options={[
-                { value: "editor", label: "Editor" },
-                { value: "preview", label: "Preview" },
+                { value: "editor", label: "编辑器" },
+                { value: "preview", label: "预览" },
               ]}
             />
           )}
@@ -216,8 +216,8 @@ export default function App() {
           <button
             className="btn-icon relative"
             onClick={toggleTerminal}
-            title="Terminal"
-            aria-label="Terminal"
+            title="终端"
+            aria-label="终端"
           >
             <IconTerminal />
             {terminalCount > 0 && (
@@ -229,14 +229,14 @@ export default function App() {
           <button
             className="btn-icon"
             onClick={() => setShowSettings(true)}
-            title="Settings"
-            aria-label="Settings"
+            title="设置"
+            aria-label="设置"
           >
             <IconSettings />
           </button>
           <span className="mx-1 h-4 w-px bg-[var(--color-line)]" />
           <button className="btn btn-primary" onClick={openProject}>
-            {root ? "Switch Project" : "Open Project"}
+            {root ? "切换项目" : "打开项目"}
           </button>
         </div>
       </header>

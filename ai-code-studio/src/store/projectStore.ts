@@ -162,7 +162,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createFile: async (parentDir) => {
-    const name = window.prompt("File name");
+    const name = window.prompt("文件名");
     if (!name) return;
     const path = parentDir === ROOT_KEY ? name : `${parentDir}/${name}`;
     await writeFile(path, "");
@@ -171,7 +171,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   createFolder: async (parentDir) => {
-    const name = window.prompt("Folder name");
+    const name = window.prompt("文件夹名");
     if (!name) return;
     const path = parentDir === ROOT_KEY ? name : `${parentDir}/${name}`;
     await createDir(path);
@@ -179,7 +179,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   deleteEntry: async (path) => {
-    if (!window.confirm(`Delete "${path}"?`)) return;
+    if (!window.confirm(`确定删除 "${path}" 吗？`)) return;
     await deletePath(path);
     set((s) => ({
       tabs: s.tabs.filter((t) => t.path !== path && !t.path.startsWith(`${path}/`)),

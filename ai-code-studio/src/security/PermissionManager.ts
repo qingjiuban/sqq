@@ -4,10 +4,10 @@ import { getTool } from "../agent/ToolRegistry";
 export type PermissionLevel = 0 | 1 | 2 | 3;
 
 export const PERMISSION_LABELS: Record<PermissionLevel, string> = {
-  0: "Level 0 — Read only",
-  1: "Level 1 — Read + edit project files",
-  2: "Level 2 — Level 1 + safe commands",
-  3: "Level 3 — Level 2 + high-risk commands",
+  0: "级别 0 — 只读",
+  1: "级别 1 — 读取 + 编辑项目文件",
+  2: "级别 2 — 级别 1 + 安全命令",
+  3: "级别 3 — 级别 2 + 高风险命令",
 };
 
 export type ApprovalMode = "ask-all" | "auto-safe" | "full-auto";

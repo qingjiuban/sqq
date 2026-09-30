@@ -9,18 +9,18 @@ import { IconCheck } from "../ui/icons";
 const MODES: { value: ApprovalMode; label: string; hint: string }[] = [
   {
     value: "ask-all",
-    label: "Ask every time",
-    hint: "Confirm before any write or command",
+    label: "每次询问",
+    hint: "任何写入或命令前都先确认",
   },
   {
     value: "auto-safe",
-    label: "Auto safe",
-    hint: "Run reads automatically, ask for the rest",
+    label: "安全自动",
+    hint: "读取自动执行，其余操作询问",
   },
   {
     value: "full-auto",
-    label: "Full auto",
-    hint: "Never prompt — the agent acts freely",
+    label: "完全自动",
+    hint: "不再提示，智能体自由执行",
   },
 ];
 
@@ -61,8 +61,8 @@ export default function AgentSettings() {
   return (
     <div className="divide-soft flex flex-col">
       <Section
-        title="Permission level"
-        description="Caps which classes of tool the agent may use."
+        title="权限级别"
+        description="限制智能体可使用的工具类别。"
       >
         <div className="flex flex-col gap-1">
           {([0, 1, 2, 3] as PermissionLevel[]).map((value) => {
@@ -96,8 +96,8 @@ export default function AgentSettings() {
       </Section>
 
       <Section
-        title="Approval mode"
-        description="When the agent pauses to ask for your consent."
+        title="审批模式"
+        description="智能体在何时暂停并征求你的同意。"
       >
         <div className="flex flex-col gap-1">
           {MODES.map((item) => {
@@ -140,16 +140,16 @@ export default function AgentSettings() {
       </Section>
 
       <Section
-        title="Self-repair"
-        description="Verify edits and feed failures back to the model."
+        title="自我修复"
+        description="校验改动并将失败反馈给模型。"
       >
         <label className="flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--color-raised)] px-3 py-2.5">
           <div className="flex flex-col gap-0.5">
             <span className="text-sm text-[var(--color-fg)]">
-              Auto-verify after edits
+              编辑后自动校验
             </span>
             <span className="text-xs text-[var(--color-mute)]">
-              Runs typecheck / build / test when available
+              可用时运行 typecheck / build / test
             </span>
           </div>
           <button
@@ -170,9 +170,9 @@ export default function AgentSettings() {
 
         <label className="flex items-center justify-between gap-4 rounded-[var(--radius-card)] bg-[var(--color-raised)] px-3 py-2.5">
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm text-[var(--color-fg)]">Repair rounds</span>
+            <span className="text-sm text-[var(--color-fg)]">修复轮数</span>
             <span className="text-xs text-[var(--color-mute)]">
-              How many fix attempts before giving up
+              放弃前最多尝试修复的次数
             </span>
           </div>
           <input

@@ -11,10 +11,10 @@ export default function WelcomeScreen() {
   const isMobile = useProjectStore((s) => s.isMobile);
 
   const desktop = isDesktopApp();
-  const primaryLabel = isMobile || !desktop ? "Open workspace" : "Open project folder";
+  const primaryLabel = isMobile || !desktop ? "打开工作区" : "打开项目文件夹";
   const hint = isMobile
-    ? "Uses the app's private workspace"
-    : "Files never leave your machine";
+    ? "使用应用私有工作区"
+    : "文件始终保留在你的设备上";
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-[var(--color-ink)] px-6">
@@ -45,8 +45,7 @@ export default function WelcomeScreen() {
           AI Code Studio
         </h1>
         <p className="mt-2 text-center text-sm text-[var(--color-dim)]">
-          Build software with AI. Bring your own model, edit files, run
-          commands and preview your app.
+          用 AI 构建软件。自带模型，编辑文件，运行命令并实时预览你的应用。
         </p>
 
         <button
@@ -61,23 +60,23 @@ export default function WelcomeScreen() {
           {[
             {
               icon: <IconSpark size={15} />,
-              title: "Model agnostic",
-              body: "OpenAI, Anthropic, Ollama or custom HTTP.",
+              title: "模型无关",
+              body: "OpenAI、Anthropic、Ollama 或自定义 HTTP。",
             },
             {
               icon: <IconCube size={15} />,
-              title: "Real workspace",
-              body: "The agent reads and edits your actual files.",
+              title: "真实工作区",
+              body: "智能体直接读取并编辑你的真实文件。",
             },
             {
               icon: <IconPlay size={15} />,
-              title: "Run & preview",
-              body: "Execute commands and preview the result live.",
+              title: "运行与预览",
+              body: "执行命令并实时预览运行结果。",
             },
             {
               icon: <IconSpark size={15} />,
-              title: "Self-repair",
-              body: "Verifies its own edits and fixes failures.",
+              title: "自我修复",
+              body: "自动校验自己的改动并修复失败。",
             },
           ].map((item) => (
             <div

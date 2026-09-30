@@ -43,12 +43,12 @@ export default function PreviewPanel() {
       {/* Browser-style toolbar */}
       <div className="flex h-11 shrink-0 items-center gap-2 border-b border-[var(--color-line-soft)] bg-[var(--color-panel)] px-3">
         <StatusDot tone={dot.tone} pulse={dot.pulse} />
-        <span className="text-sm font-medium">Preview</span>
+        <span className="text-sm font-medium">预览</span>
         <span className="truncate text-xs text-[var(--color-mute)]">
-          {plan ? plan.label : "Not detected"}
-          {status === "starting" && " · starting…"}
-          {status === "detecting" && " · detecting…"}
-          {plan?.localEntry && " · on-device"}
+          {plan ? plan.label : "未检测"}
+          {status === "starting" && " · 启动中…"}
+          {status === "detecting" && " · 检测中…"}
+          {plan?.localEntry && " · 设备本地"}
         </span>
         <div className="ml-auto flex items-center gap-1">
           {status === "running" && url && (
@@ -56,16 +56,16 @@ export default function PreviewPanel() {
               <button
                 className="btn-icon"
                 onClick={() => setNonce((n) => n + 1)}
-                title="Reload"
-                aria-label="Reload"
+                title="重新加载"
+                aria-label="重新加载"
               >
                 <IconRefresh size={15} />
               </button>
               <button
                 className="btn-icon"
                 onClick={() => window.open(url, "_blank")}
-                title="Open in browser"
-                aria-label="Open in browser"
+                title="在浏览器中打开"
+                aria-label="在浏览器中打开"
               >
                 <IconExternal size={15} />
               </button>
@@ -74,7 +74,7 @@ export default function PreviewPanel() {
           {status === "running" ? (
             <button className="btn btn-outline" onClick={() => void stop()}>
               <IconStop size={13} />
-              Stop
+              停止
             </button>
           ) : (
             <button
@@ -83,15 +83,15 @@ export default function PreviewPanel() {
               onClick={() => void start()}
             >
               <IconPlay size={13} />
-              {busy ? "Starting…" : plan ? "Start" : "Detect & Start"}
+              {busy ? "启动中…" : plan ? "启动" : "检测并启动"}
             </button>
           )}
           <button
             className="btn-icon"
             onClick={() => void detect()}
             disabled={busy}
-            title="Re-detect project type"
-            aria-label="Re-detect project type"
+            title="重新检测项目类型"
+            aria-label="重新检测项目类型"
           >
             <IconRefresh size={15} />
           </button>
@@ -102,7 +102,7 @@ export default function PreviewPanel() {
         <iframe
           key={nonce}
           src={url}
-          title="preview"
+          title="预览"
           className="min-h-0 flex-1 border-0 bg-white"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
         />
@@ -120,19 +120,19 @@ export default function PreviewPanel() {
               </span>
               <div className="flex max-w-sm flex-col items-center gap-1.5">
                 <span className="text-md font-medium text-[var(--color-dim)]">
-                  Preview isn't running
+                  预览未运行
                 </span>
                 <span className="text-sm text-[var(--color-mute)]">
                   {mobile
-                    ? "On mobile, HTML and SVG files render directly. Ask the agent to create an index.html."
+                    ? "在移动端，HTML 和 SVG 文件会直接渲染。可以让智能体创建一个 index.html。"
                     : plan
-                      ? "Start the local preview server to see your application here."
-                      : "Open a project, then start a preview server."}
+                      ? "启动本地预览服务，即可在此查看你的应用。"
+                      : "先打开一个项目，再启动预览服务。"}
                 </span>
                 {plan && (
                   <span className="mt-1 inline-flex items-center gap-1.5 text-xs text-[var(--color-faint)]">
                     <IconInfo size={12} />
-                    {plan.label} · port {plan.port}
+                    {plan.label} · 端口 {plan.port}
                   </span>
                 )}
               </div>
@@ -143,7 +143,7 @@ export default function PreviewPanel() {
                   onClick={() => void start()}
                 >
                   <IconPlay size={13} />
-                  {busy ? "Starting…" : "Start Preview"}
+                  {busy ? "启动中…" : "启动预览"}
                 </button>
               )}
             </>

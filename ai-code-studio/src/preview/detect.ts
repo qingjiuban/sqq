@@ -114,7 +114,7 @@ async function detectNode(
     port = 8080;
   } else if (deps.express || deps.fastify || deps.koa) {
     kind = "node-server";
-    label = "Node server";
+    label = "Node 服务";
     port = 3000;
   } else {
     notes.push("No known web framework detected; using the start script as-is.");
@@ -148,7 +148,7 @@ async function detectStatic(): Promise<PreviewPlan | null> {
   if (!hasIndex && !hasPublic) return null;
   return {
     kind: "static",
-    label: "Static HTML",
+    label: "静态 HTML",
     command: { command: "python3", args: ["-m", "http.server", "8000"] },
     port: 8000,
     cwd: hasIndex ? undefined : "public",

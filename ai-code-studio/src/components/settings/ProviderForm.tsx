@@ -16,16 +16,16 @@ const TYPE_OPTIONS: { value: ProviderType; label: string }[] = [
 ];
 
 const CAPABILITY_LABELS: Record<keyof ProviderCapabilities, string> = {
-  streaming: "Streaming",
-  toolCalling: "Tool Calling",
-  vision: "Vision",
-  reasoning: "Reasoning",
+  streaming: "流式输出",
+  toolCalling: "工具调用",
+  vision: "视觉",
+  reasoning: "推理",
 };
 
 function emptyConfig(): ModelProviderConfig {
   return {
     id: crypto.randomUUID(),
-    name: "New Provider",
+    name: "新建服务商",
     type: "openai-compatible",
     baseUrl: "https://api.openai.com/v1",
     model: "gpt-4o-mini",
@@ -83,7 +83,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       try {
         next.headers = JSON.parse(headersText);
       } catch {
-        throw new Error("Headers must be valid JSON");
+        throw new Error("请求头必须是合法的 JSON");
       }
     } else {
       delete next.headers;
@@ -92,7 +92,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       try {
         next.request = JSON.parse(requestText);
       } catch {
-        throw new Error("Request template must be valid JSON");
+        throw new Error("请求模板必须是合法的 JSON");
       }
     } else if (config.type !== "custom-http") {
       delete next.request;
@@ -101,7 +101,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       try {
         next.response = JSON.parse(responseText);
       } catch {
-        throw new Error("Response mapping must be valid JSON");
+        throw new Error("响应映射必须是合法的 JSON");
       }
     } else if (config.type !== "custom-http") {
       delete next.response;
@@ -128,32 +128,32 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
 
   const handleTest = () =>
     run(async (next) => {
-      setStatus("Testing...");
+      setStatus("测试中…");
       const result = await ModelGateway.testConnection(next);
       setStatus(
-        `${result.ok ? "OK" : "FAILED"} (${result.latencyMs}ms) — ${result.message}`,
+        `${result.ok ? "成功" : "失败"} (${result.latencyMs}ms) — ${result.message}`,
       );
     });
 
   const handleListModels = () =>
     run(async (next) => {
-      setStatus("Fetching models...");
+      setStatus("正在获取模型…");
       const list = await ModelGateway.listModels(next);
       setModels(list);
-      setStatus(`Found ${list.length} models`);
+      setStatus(`共找到 ${list.length} 个模型`);
     });
 
   return (
     <div className="flex flex-col gap-3 overflow-y-auto p-4">
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Name">
+        <Field label="名称">
           <input
             className={inputClass}
             value={config.name}
             onChange={(e) => patch({ name: e.target.value })}
           />
         </Field>
-        <Field label="Type">
+        <Field label="类型">
           <select
             className={inputClass}
             value={config.type}
@@ -169,7 +169,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       </div>
 
       <Field
-        label={config.type === "custom-http" ? "Endpoint URL" : "Base URL"}
+        label={config.type === "custom-http" ? "接口地址" : "Base URL"}
       >
         <input
           className={inputClass}
@@ -180,7 +180,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Model">
+        <Field label="模型">
           <input
             className={inputClass}
             list="acs-model-list"
@@ -204,7 +204,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
         </Field>
       </div>
 
-      <Field label="Capabilities">
+      <Field label="能力">
         <div className="flex flex-wrap gap-3 pt-1">
           {(Object.keys(CAPABILITY_LABELS) as (keyof ProviderCapabilities)[]).map(
             (key) => (
@@ -232,7 +232,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
         </div>
       </Field>
 
-      <Field label="Extra Headers (JSON, optional)">
+      <Field label="额外请求头 (JSON，可选)">
         <textarea
           className={`${inputClass} h-16 font-mono text-xs`}
           value={headersText}
@@ -243,7 +243,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
 
       {config.type === "custom-http" && (
         <>
-          <Field label="Request Template (JSON)">
+          <Field label="请求模板 (JSON)">
             <textarea
               className={`${inputClass} h-28 font-mono text-xs`}
               value={requestText}
@@ -253,7 +253,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
               }
             />
           </Field>
-          <Field label="Response Mapping (JSON)">
+          <Field label="响应映射 (JSON)">
             <textarea
               className={`${inputClass} h-20 font-mono text-xs`}
               value={responseText}
@@ -266,10 +266,10 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
 
       <div className="flex items-center gap-2 pt-1">
         <button className="btn btn-primary" onClick={handleSave} disabled={busy}>
-          Save
+          保存
         </button>
         <button className="btn btn-outline" onClick={handleTest} disabled={busy}>
-          Test Connection
+          测试连接
         </button>
         {config.type !== "custom-http" && (
           <button
@@ -277,7 +277,7 @@ export default function ProviderForm({ initial, onDone }: ProviderFormProps) {
             onClick={handleListModels}
             disabled={busy}
           >
-            Fetch Models
+            获取模型列表
           </button>
         )}
       </div>

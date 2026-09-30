@@ -44,7 +44,7 @@ export default function EditorTabs() {
                 e.stopPropagation();
                 closeTab(tab.path);
               }}
-              aria-label={`Close ${name}`}
+              aria-label={`关闭 ${name}`}
             >
               <IconClose size={12} />
             </button>

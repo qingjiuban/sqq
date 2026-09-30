@@ -33,36 +33,36 @@ export default function Sidebar({ embedded = false }: { embedded?: boolean }) {
     >
       <div className="flex h-11 shrink-0 items-center justify-between gap-2 px-3">
         <div className="flex min-w-0 flex-col">
-          <span className="eyebrow">Project</span>
+          <span className="eyebrow">项目</span>
           <span
             className="truncate text-sm font-medium text-[var(--color-fg)]"
             title={projectName}
           >
-            {projectName || "Explorer"}
+            {projectName || "资源管理器"}
           </span>
         </div>
         <div className="flex shrink-0 items-center">
           <button
             className="btn-icon"
             onClick={() => createFile(".")}
-            title="New file"
-            aria-label="New file"
+            title="新建文件"
+            aria-label="新建文件"
           >
             <IconPlus size={15} />
           </button>
           <button
             className="btn-icon"
             onClick={() => createFolder(".")}
-            title="New folder"
-            aria-label="New folder"
+            title="新建文件夹"
+            aria-label="新建文件夹"
           >
             <IconFolderPlus size={15} />
           </button>
           <button
             className="btn-icon"
             onClick={refreshTree}
-            title="Refresh"
-            aria-label="Refresh"
+            title="刷新"
+            aria-label="刷新"
           >
             <IconRefresh size={15} />
           </button>
@@ -71,14 +71,14 @@ export default function Sidebar({ embedded = false }: { embedded?: boolean }) {
 
       <div className="flex-1 overflow-y-auto pb-3">
         <div className="px-3 pb-1">
-          <span className="eyebrow">Files</span>
+          <span className="eyebrow">文件</span>
         </div>
         <FileTree dirPath="." depth={0} />
 
         {tabs.length > 0 && (
           <div className="mt-3 border-t border-[var(--color-line-soft)] pt-2">
             <div className="px-3 pb-1">
-              <span className="eyebrow">Open</span>
+              <span className="eyebrow">已打开</span>
             </div>
             {tabs.map((tab) => {
               const active = tab.path === activePath;
@@ -103,7 +103,7 @@ export default function Sidebar({ embedded = false }: { embedded?: boolean }) {
                       e.stopPropagation();
                       closeTab(tab.path);
                     }}
-                    aria-label={`Close ${tab.path}`}
+                    aria-label={`关闭 ${tab.path}`}
                   >
                     <IconClose size={12} />
                   </button>
