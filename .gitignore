@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Rust / Tauri build artifacts
+target/
+ai-code-studio/src-tauri/target/
+
+# Generated native mobile projects (environment-specific)
+ai-code-studio/src-tauri/gen/android/
+ai-code-studio/src-tauri/gen/apple/
+ai-code-studio/src-tauri/gen/schemas/
+
+# Packaged source archives
+*.tar.gz
+
+# Logs and local env
+*.log
+*.local
+.DS_Store
+.idea/
+
+# Platform-internal agent memory (not part of the project)
+.monkeycode/
